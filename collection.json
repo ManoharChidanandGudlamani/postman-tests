@@ -1,0 +1,3195 @@
+{
+	"info": {
+		"_postman_id": "da4c4eae-f2b5-4f6e-8658-55c27d16070b",
+		"name": "YD V2 API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26703343",
+		"_collection_link": "https://somadevteam.postman.co/workspace/New-Team-Workspace~dad3501b-b22c-475d-affe-f22aa556c988/collection/43524096-da4c4eae-f2b5-4f6e-8658-55c27d16070b?action=share&source=collection_link&creator=26703343"
+	},
+	"item": [
+		{
+			"name": "Home Page",
+			"item": [
+				{
+					"name": "GetTags",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Assertions Validation\r",
+									"// Parse response JSON\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"// Status code check\r",
+									"pm.test(\"Validate status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Validate UnReadCaseNoteTags exists and is an array\r",
+									"pm.test(\"UnReadCaseNoteTags should exist and be an array\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"UnReadCaseNoteTags\");\r",
+									"    pm.expect(jsonData.UnReadCaseNoteTags).to.be.an(\"array\");\r",
+									"});\r",
+									"\r",
+									"// Check if UnReadCaseNoteTags is empty\r",
+									"pm.test(\"UnReadCaseNoteTags should be empty\", function () {\r",
+									"    pm.expect(jsonData.UnReadCaseNoteTags.length).to.eql(0);\r",
+									"});\r",
+									"\r",
+									"// Validate PagerInfo structure\r",
+									"pm.test(\"PagerInfo should exist and have required fields\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"PagerInfo\");\r",
+									"    pm.expect(jsonData.PagerInfo.TotalItems).to.eql(0);\r",
+									"    pm.expect(jsonData.PagerInfo.ItemsPerPage).to.eql(10);\r",
+									"    pm.expect(jsonData.PagerInfo.CurrentPage).to.eql(1);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/ehr/Home/Tags?ItemsPerPage=10&Page=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ehr",
+								"Home",
+								"Tags"
+							],
+							"query": [
+								{
+									"key": "ItemsPerPage",
+									"value": "10"
+								},
+								{
+									"key": "Page",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetAppointmentsHome",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Assertions Validation\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"// Status code check\r",
+									"pm.test(\"Validate Status Code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// PatientAlerts should exist\r",
+									"pm.test(\"Response should contain 'PatientAlerts'\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"PatientAlerts\");\r",
+									"});\r",
+									"\r",
+									"// Check if PatientAlerts is a non-empty array\r",
+									"pm.test(\"PatientAlerts should be a non-empty array\", function () {\r",
+									"    pm.expect(jsonData.PatientAlerts).to.be.an(\"array\").that.is.not.empty;\r",
+									"});\r",
+									"\r",
+									"// First object validations\r",
+									"const alert = jsonData.PatientAlerts[0];\r",
+									"\r",
+									"pm.test(\"Validate ApptId\", function () {\r",
+									"    pm.expect(alert.ApptId).to.eql(939697);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validate ProviderId\", function () {\r",
+									"    pm.expect(alert.ProviderId).to.eql(15);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validate EpisodeId\", function () {\r",
+									"    pm.expect(alert.EpisodeId).to.eql(134276);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validate CaseNoteId\", function () {\r",
+									"    pm.expect(alert.CaseNoteId).to.eql(4426507);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validate Patient First & Last Name\", function () {\r",
+									"    pm.expect(alert.PatientFirstName).to.eql(\"Allie\");\r",
+									"    pm.expect(alert.PatientLastName).to.eql(\"Lawrence\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validate Patient DOB\", function () {\r",
+									"    pm.expect(alert.PatientDOB).to.eql(\"1996-12-03T00:00:00\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validate GenderId\", function () {\r",
+									"    pm.expect(alert.GenderId).to.eql(1);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validate CaseTypeId\", function () {\r",
+									"    pm.expect(alert.CaseTypeId).to.eql(1);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validate CaseTypeStateId\", function () {\r",
+									"    pm.expect(alert.CaseTypeStateId).to.eql(41);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validate DOS\", function () {\r",
+									"    pm.expect(alert.DOS).to.eql(\"2025-03-27T09:45:00\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validate Provider First & Last Name\", function () {\r",
+									"    pm.expect(alert.ProviderFirstName).to.eql(\"Thomas\");\r",
+									"    pm.expect(alert.ProviderLastName).to.eql(\"Scilaris\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validate Appointment Type Info\", function () {\r",
+									"    pm.expect(alert.AppointmentTypeId).to.eql(1);\r",
+									"    pm.expect(alert.AppointmentTypeName).to.eql(\"Follow Up Visit\");\r",
+									"    pm.expect(alert.AppointmentTypeShortName).to.eql(\"FUP\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validate Case Number\", function () {\r",
+									"    pm.expect(alert.CaseNumber).to.eql(\"Y2503127452_1\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"packages": {},
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/ehr/Home/Appointments?DOSStartDate=2025-03-27&ItemsPerPage&Page=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ehr",
+								"Home",
+								"Appointments"
+							],
+							"query": [
+								{
+									"key": "DOSStartDate",
+									"value": "2025-03-27"
+								},
+								{
+									"key": "ItemsPerPage",
+									"value": null
+								},
+								{
+									"key": "Page",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetMemberReminders",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the response body\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"//  Status code check\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"//  Check MemberReminders exists and is an array\r",
+									"pm.test(\"MemberReminders exists and is an array\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"MemberReminders\");\r",
+									"    pm.expect(jsonData.MemberReminders).to.be.an(\"array\").that.is.not.empty;\r",
+									"});\r",
+									"\r",
+									"//  Validate the first item in the MemberReminders array\r",
+									"const reminder = jsonData.MemberReminders[0];\r",
+									"\r",
+									"pm.test(\"Validate basic reminder fields\", function () {\r",
+									"    pm.expect(reminder.Id).to.eql(25);\r",
+									"    pm.expect(reminder.EpisodeId).to.eql(96808);\r",
+									"    pm.expect(reminder.AppointmentId).to.eql(791035);\r",
+									"    pm.expect(reminder.ReminderText).to.eql(\"test\");\r",
+									"    pm.expect(reminder.ReminderDateTime).to.eql(\"2025-01-17T13:00:00\");\r",
+									"    pm.expect(reminder.StatusId).to.eql(19);\r",
+									"    pm.expect(reminder.IsActive).to.be.true;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validate creator details\", function () {\r",
+									"    pm.expect(reminder.CreatedBy).to.eql(1);\r",
+									"    pm.expect(reminder.CreatedDate).to.eql(\"2025-01-17T07:18:17\");\r",
+									"    pm.expect(reminder.CreatedFirstName).to.eql(\"YourDrs\");\r",
+									"    pm.expect(reminder.CreatedLastName).to.eql(\"Admin\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validate patient info\", function () {\r",
+									"    pm.expect(reminder.PatientFirstName).to.eql(\"Test Test\");\r",
+									"    pm.expect(reminder.PatientLastName).to.eql(\"Test Test\");\r",
+									"    pm.expect(reminder.PatientDob).to.eql(\"1938-01-20T00:00:00\");\r",
+									"    pm.expect(reminder.CaseNumber).to.eql(\"Y181021994_7\");\r",
+									"    pm.expect(reminder.Mrn).to.eql(\"Y181021994\");\r",
+									"    pm.expect(reminder.GenderId).to.eql(2);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validate case and member info\", function () {\r",
+									"    pm.expect(reminder.CaseTypeStateId).to.eql(41);\r",
+									"    pm.expect(reminder.CaseTypeId).to.eql(1);\r",
+									"    pm.expect(reminder.LoggedInMemberId).to.eql(0);\r",
+									"    pm.expect(reminder.MemberList).to.eql(\"Asha Kumbar\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/ehr/Reminders/MemberReminders?Page=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ehr",
+								"Reminders",
+								"MemberReminders"
+							],
+							"query": [
+								{
+									"key": "Page",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUnreadcount",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/ehr/Message/UnreadCount",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ehr",
+								"Message",
+								"UnreadCount"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetReminderCount",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse response JSON\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"// Check status code\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Validate 'Total RemindersCount' field exists\r",
+									"pm.test(\"Total Reminders Count field exists\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"TotalRemindersCount\");\r",
+									"});\r",
+									"\r",
+									"// Validate 'TotalRemindersCount' is 1\r",
+									"pm.test(\"TotalRemindersCount is 1\", function () {\r",
+									"    pm.expect(jsonData.TotalRemindersCount).to.eql(1);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/ehr/Reminders/Counts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ehr",
+								"Reminders",
+								"Counts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetMemberDetails",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse response JSON\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"//  Status code\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Basic field checks\r",
+									"pm.test(\"Validate user fields\", function () {\r",
+									"    pm.expect(jsonData.MemberId).to.eql(1);\r",
+									"    pm.expect(jsonData.UserName).to.eql(\"YourDrsAdmin@yd.com\");\r",
+									"    pm.expect(jsonData.Email).to.eql(\"YourDrsAdmin@yd.com\");\r",
+									"    pm.expect(jsonData.FirstName).to.eql(\"YourDrs\");\r",
+									"    pm.expect(jsonData.LastName).to.eql(\"Admin\");\r",
+									"    pm.expect(jsonData.DisplayName).to.eql(\"YourDrs Admin\");\r",
+									"    pm.expect(jsonData.ProfilePhoto).to.be.null;\r",
+									"    pm.expect(jsonData.RequestChangePassword).to.be.false;\r",
+									"    pm.expect(jsonData.UserTermsAcceptedDate).to.be.null;\r",
+									"});\r",
+									"\r",
+									"//  UserInfoRoles validation\r",
+									"pm.test(\"UserInfoRoles should exist and be a non-empty array\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"UserInfoRoles\");\r",
+									"    pm.expect(jsonData.UserInfoRoles).to.be.an(\"array\").that.is.not.empty;\r",
+									"});\r",
+									"\r",
+									"const role = jsonData.UserInfoRoles[0];\r",
+									"\r",
+									"pm.test(\"Validate UserInfoRoles fields\", function () {\r",
+									"    pm.expect(role.MemberRoleId).to.eql(1);\r",
+									"    pm.expect(role.RoleId).to.eql(1);\r",
+									"    pm.expect(role.RoleName).to.eql(\"Admin\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/ehr/Member/Detail",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ehr",
+								"Member",
+								"Detail"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Office DB",
+			"item": [
+				{
+					"name": "Fav FiltersAppointmenttab",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse response JSON\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"// Status code check\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Response should be a non-empty array\r",
+									"pm.test(\"Response should be an array with at least one filter\", function () {\r",
+									"    pm.expect(jsonData).to.be.an(\"array\").that.is.not.empty;\r",
+									"});\r",
+									"\r",
+									"// Validate first filter object\r",
+									"const filter = jsonData[0];\r",
+									"\r",
+									"pm.test(\"Validate basic filter properties\", function () {\r",
+									"    pm.expect(filter.Id).to.eql(124);\r",
+									"    pm.expect(filter.DashboardId).to.eql(9);\r",
+									"    pm.expect(filter.MemberId).to.eql(1);\r",
+									"    pm.expect(filter.FilterName).to.eql(\"bronx providers\");\r",
+									"    pm.expect(filter.IsActive).to.be.true;\r",
+									"    pm.expect(filter.IsDefaultFilter).to.be.false;\r",
+									"});\r",
+									"\r",
+									"//  Validate FilterValues array\r",
+									"pm.test(\"FilterValues should be an array with 3 entries\", function () {\r",
+									"    pm.expect(filter.FilterValues).to.be.an(\"array\").with.lengthOf(3);\r",
+									"});\r",
+									"\r",
+									"//  Loop through FilterValues and check FId/Value existence\r",
+									"pm.test(\"Each FilterValue has FId and Value\", function () {\r",
+									"    filter.FilterValues.forEach((fv, index) => {\r",
+									"        pm.expect(fv).to.have.property(\"FId\");\r",
+									"        pm.expect(fv).to.have.property(\"Value\");\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"//  Optional: Parse JSON in Value field for FId 3\r",
+									"pm.test(\"Parse and validate JSON Value for FId 3\", function () {\r",
+									"    const fv = filter.FilterValues.find(fv => fv.FId === 3);\r",
+									"    pm.expect(fv).to.exist;\r",
+									"\r",
+									"    const valueObj = JSON.parse(fv.Value);\r",
+									"    pm.expect(valueObj.RangeId).to.eql(1);\r",
+									"    pm.expect(valueObj.Date).to.be.null;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/ehr/Dashboard/9/FavoriteFilters",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ehr",
+								"Dashboard",
+								"9",
+								"FavoriteFilters"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetCategoriesOfficeDB",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse JSON response\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"// Status code check\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Check if 'FormConfiguartionCategoriesDetails' is an array\r",
+									"pm.test(\"FormConfiguartionCategoriesDetails should be an array\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"FormConfiguartionCategoriesDetails\");\r",
+									"    pm.expect(jsonData.FormConfiguartionCategoriesDetails).to.be.an(\"array\").that.is.not.empty;\r",
+									"});\r",
+									"\r",
+									"// Validate the first item in the array\r",
+									"const formDetail = jsonData.FormConfiguartionCategoriesDetails[0];\r",
+									"\r",
+									"pm.test(\"Validate Form Configuration Details fields\", function () {\r",
+									"    pm.expect(formDetail.FormConfigId).to.eql(0);\r",
+									"    pm.expect(formDetail.FormCategoriesId).to.eql(1);\r",
+									"    pm.expect(formDetail.CategoryName).to.eql(\"Patient Forms\");\r",
+									"    pm.expect(formDetail.FormCategoriesMenuId).to.eql(1);\r",
+									"    pm.expect(formDetail.CategoryMenuName).to.eql(\"Intake\");\r",
+									"    pm.expect(formDetail.FormTypeId).to.eql(2);\r",
+									"    pm.expect(formDetail.FormTypeName).to.eql(\"Electronic\");\r",
+									"    pm.expect(formDetail.FormFrequencyId).to.eql(2);\r",
+									"    pm.expect(formDetail.FormFrequencyName).to.eql(\"Single Document-Override\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/ehr/FormConfiguration/Categories?DashboardId=9",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ehr",
+								"FormConfiguration",
+								"Categories"
+							],
+							"query": [
+								{
+									"key": "DashboardId",
+									"value": "9"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetAppointmentsOfficeDB",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the JSON response\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"//  Status code check\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Validate the response is an array\r",
+									"pm.test(\"Response should be an array\", function () {\r",
+									"    pm.expect(jsonData).to.be.an(\"array\").that.is.not.empty;\r",
+									"});\r",
+									"\r",
+									"// Validate each appointment record\r",
+									"jsonData.forEach((appointment, index) => {\r",
+									"    pm.test(`Appointment #${index + 1} - Validate required fields`, function () {\r",
+									"        pm.expect(appointment).to.have.property(\"AppointmentId\");\r",
+									"        pm.expect(appointment).to.have.property(\"EpisodeId\");\r",
+									"        pm.expect(appointment).to.have.property(\"ProviderId\");\r",
+									"        pm.expect(appointment).to.have.property(\"StartDateTime\");\r",
+									"        pm.expect(appointment).to.have.property(\"EndDateTime\");\r",
+									"        pm.expect(appointment).to.have.property(\"PatientId\");\r",
+									"        pm.expect(appointment).to.have.property(\"FirstName\");\r",
+									"        pm.expect(appointment).to.have.property(\"LastName\");\r",
+									"        pm.expect(appointment).to.have.property(\"MRN\");\r",
+									"        pm.expect(appointment).to.have.property(\"ProviderName\");\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"//  Validate Start and End DateTime format\r",
+									"jsonData.forEach((appointment, index) => {\r",
+									"    pm.test(`Appointment #${index + 1} - StartDateTime and EndDateTime format`, function () {\r",
+									"        pm.expect(appointment.StartDateTime).to.match(/^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2})$/);\r",
+									"        pm.expect(appointment.EndDateTime).to.match(/^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2})$/);\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"//  Check if EpisodeBodyParts is not empty or null (allow empty string in case it's valid)\r",
+									"jsonData.forEach((appointment, index) => {\r",
+									"    pm.test(`Appointment #${index + 1} - Validate EpisodeBodyParts is not null or empty`, function () {\r",
+									"        pm.expect(appointment.EpisodeBodyParts).to.satisfy(function (value) {\r",
+									"            return value !== null && (value.trim() !== \"\" || value === \"\"); // Allow empty string\r",
+									"        });\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"//  Check if GenderId is either 1 or 2 (assuming Male or Female)\r",
+									"jsonData.forEach((appointment, index) => {\r",
+									"    pm.test(`Appointment #${index + 1} - GenderId validation`, function () {\r",
+									"        if (appointment.GenderId) {\r",
+									"            pm.expect(appointment.GenderId).to.be.oneOf([1, 2]);\r",
+									"        }\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/ehr/AppointmentDashboard?LocationIds=121&ProviderIds=&DateOfService=2025-03-27",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ehr",
+								"AppointmentDashboard"
+							],
+							"query": [
+								{
+									"key": "LocationIds",
+									"value": "121"
+								},
+								{
+									"key": "ProviderIds",
+									"value": ""
+								},
+								{
+									"key": "DateOfService",
+									"value": "2025-03-27"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetTooltipOfficeDB",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the JSON response\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"// Status code check\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Validate that 'PatientPhones' is an array and check its length\r",
+									"pm.test(\"PatientPhones should be an array and length should be 0\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"PatientPhones\");\r",
+									"    pm.expect(jsonData.PatientPhones).to.be.an(\"array\").that.has.lengthOf(0);\r",
+									"});\r",
+									"\r",
+									"// Validate that 'CaseNotes' is an array and check its length\r",
+									"pm.test(\"CaseNotes should be an array and length should be 0\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"CaseNotes\");\r",
+									"    pm.expect(jsonData.CaseNotes).to.be.an(\"array\").that.has.lengthOf(0);\r",
+									"});\r",
+									"\r",
+									"// Validate that 'Alerts' exists and 'EpisodePatientAlert' is an array with length 0\r",
+									"pm.test(\"Alerts should contain 'EpisodePatientAlert' as an array with length 0\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"Alerts\");\r",
+									"    pm.expect(jsonData.Alerts).to.have.property(\"EpisodePatientAlert\");\r",
+									"    pm.expect(jsonData.Alerts.EpisodePatientAlert).to.be.an(\"array\").that.has.lengthOf(0);\r",
+									"});\r",
+									"\r",
+									"// Validate 'PagingInfo' fields\r",
+									"pm.test(\"PagingInfo should have correct properties\", function () {\r",
+									"    pm.expect(jsonData.Alerts).to.have.property(\"PagingInfo\");\r",
+									"    pm.expect(jsonData.Alerts.PagingInfo).to.have.property(\"TotalItems\").that.is.a(\"number\");\r",
+									"    pm.expect(jsonData.Alerts.PagingInfo).to.have.property(\"ItemsPerPage\").that.is.a(\"number\");\r",
+									"    pm.expect(jsonData.Alerts.PagingInfo).to.have.property(\"CurrentPage\").that.is.a(\"number\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/ehr/AppointmentDashboard/ToolTipInformation?PatientId=133050&AppointmentId=978519&EpisodeId=140182",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ehr",
+								"AppointmentDashboard",
+								"ToolTipInformation"
+							],
+							"query": [
+								{
+									"key": "PatientId",
+									"value": "133050"
+								},
+								{
+									"key": "AppointmentId",
+									"value": "978519"
+								},
+								{
+									"key": "EpisodeId",
+									"value": "140182"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetSchedulerAppsOfficeDB",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the JSON response\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"//  Status code check\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"//  Validate 'Appointments' field exists and is an array\r",
+									"pm.test(\"Appointments should be an array\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"Appointments\");\r",
+									"    pm.expect(jsonData.Appointments).to.be.an(\"array\").that.is.not.empty;\r",
+									"});\r",
+									"\r",
+									"//  Validate the first appointment details\r",
+									"const appointment = jsonData.Appointments[0];\r",
+									"\r",
+									"pm.test(\"Validate Appointment fields\", function () {\r",
+									"    pm.expect(appointment).to.have.property(\"AppointmentId\").that.is.a(\"number\");\r",
+									"    pm.expect(appointment).to.have.property(\"EpisodeId\").that.is.a(\"number\");\r",
+									"    pm.expect(appointment).to.have.property(\"PracticeId\").that.is.a(\"number\");\r",
+									"    pm.expect(appointment).to.have.property(\"LocationId\").that.is.a(\"number\");\r",
+									"    pm.expect(appointment).to.have.property(\"ProviderId\").that.is.a(\"number\");\r",
+									"    pm.expect(appointment).to.have.property(\"AppointmentTypeId\").that.is.a(\"number\");\r",
+									"    pm.expect(appointment).to.have.property(\"AppointmentStatusId\").that.is.a(\"number\");\r",
+									"    pm.expect(appointment).to.have.property(\"StartDate\").that.is.a(\"string\");\r",
+									"    pm.expect(appointment).to.have.property(\"EndDate\").that.is.a(\"string\");\r",
+									"    pm.expect(appointment).to.have.property(\"CreatedDate\").that.is.a(\"string\");\r",
+									"    pm.expect(appointment).to.have.property(\"PatientId\").that.is.a(\"number\");\r",
+									"    pm.expect(appointment).to.have.property(\"FirstName\").that.is.a(\"string\");\r",
+									"    pm.expect(appointment).to.have.property(\"LastName\").that.is.a(\"string\");\r",
+									"    pm.expect(appointment).to.have.property(\"MRN\").that.is.a(\"string\");\r",
+									"    pm.expect(appointment).to.have.property(\"CaseNumber\").that.is.a(\"string\");\r",
+									"    pm.expect(appointment).to.have.property(\"ProviderName\").that.is.a(\"string\");\r",
+									"    pm.expect(appointment).to.have.property(\"HasPatientConfirmed\").that.is.a(\"boolean\");\r",
+									"    pm.expect(appointment).to.have.property(\"EpisodeAuthorizationId\").that.is.null;\r",
+									"    pm.expect(appointment.EpisodeAuthorizationId).to.satisfy(function(value) {\r",
+									"        return value === null || typeof value === 'number';\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"//  Check if 'StartDate' and 'EndDate' are in valid date-time format\r",
+									"pm.test(\"StartDate and EndDate should be valid date-time format\", function () {\r",
+									"    const dateFormatRegex = /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}$/;\r",
+									"    pm.expect(appointment.StartDate).to.match(dateFormatRegex);\r",
+									"    pm.expect(appointment.EndDate).to.match(dateFormatRegex);\r",
+									"});\r",
+									"\r",
+									"//  Check if 'ProfilePhoto' exists and is an empty string (optional field)\r",
+									"pm.test(\"ProfilePhoto should be an empty string\", function () {\r",
+									"    pm.expect(appointment.ProfilePhoto).to.eql(\"\");\r",
+									"});\r",
+									"\r",
+									"//  Validate 'ModifiedDate' and 'ModifiedByMember' (optional fields)\r",
+									"pm.test(\"ModifiedDate and ModifiedByMember should be null\", function () {\r",
+									"    pm.expect(appointment.ModifiedDate).to.be.null;\r",
+									"    pm.expect(appointment.ModifiedByMember).to.be.null;\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/ehr/Scheduler/Appointments?PracticeIds=81&LocationIds=121&ProviderIds=&DateOfService=2025-03-27",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ehr",
+								"Scheduler",
+								"Appointments"
+							],
+							"query": [
+								{
+									"key": "PracticeIds",
+									"value": "81"
+								},
+								{
+									"key": "LocationIds",
+									"value": "121"
+								},
+								{
+									"key": "ProviderIds",
+									"value": ""
+								},
+								{
+									"key": "DateOfService",
+									"value": "2025-03-27"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetStatuses",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"//  Status code check\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"// Log the entire response to the Postman console for debugging\r",
+									"console.log(\"Full Response:\", JSON.stringify(jsonData, null, 2));\r",
+									"\r",
+									"// Check if 'Statuses' exists and is an array\r",
+									"pm.test(\"Check if 'Statuses' exists and is an array\", function () {\r",
+									"    pm.expect(jsonData).to.be.an(\"array\").that.is.not.empty;\r",
+									"});\r",
+									"\r",
+									"// Validate that each status object has the expected properties\r",
+									"jsonData.forEach(function(status) {\r",
+									"    pm.test(`Validate Status fields for StatusId: ${status.StatusId}`, function () {\r",
+									"        pm.expect(status).to.have.property(\"Id\").that.is.a(\"number\");\r",
+									"        pm.expect(status).to.have.property(\"StatusGroupId\").that.is.a(\"number\");\r",
+									"        pm.expect(status).to.have.property(\"StatusId\").that.is.a(\"number\");\r",
+									"        pm.expect(status).to.have.property(\"BackgroundColor\").that.is.a(\"string\");\r",
+									"        pm.expect(status).to.have.property(\"FontColor\").that.is.a(\"string\");\r",
+									"        pm.expect(status).to.have.property(\"OrderNumber\").that.is.a(\"number\");\r",
+									"        pm.expect(status).to.have.property(\"IsMandatory\").that.is.a(\"boolean\");\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"// Additional tests based on specific values (optional)\r",
+									"pm.test(\"Check if specific StatusId exists\", function () {\r",
+									"    const statusIds = jsonData.map(status => status.StatusId);\r",
+									"    pm.expect(statusIds).to.include(3);  // Check if StatusId 3 is in the list\r",
+									"    pm.expect(statusIds).to.include(129);  // Check if StatusId 129 is in the list\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/ehr/AppointmentDashboard/Statuses",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ehr",
+								"AppointmentDashboard",
+								"Statuses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetSchedulerStatuses",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"//  Status code check\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"// Log the entire response to the Postman console for debugging\r",
+									"console.log(\"Full Response:\", JSON.stringify(jsonData, null, 2));\r",
+									"\r",
+									"// Test 1: Check if 'Statuses' exists and is an array\r",
+									"pm.test(\"Check if response is an array and not empty\", function () {\r",
+									"    pm.expect(jsonData).to.be.an(\"array\").that.is.not.empty;\r",
+									"});\r",
+									"\r",
+									"// Test 2: Validate the structure of each status object\r",
+									"jsonData.forEach(function(status) {\r",
+									"    pm.test(`Validate Status fields for StatusId: ${status.StatusId}`, function () {\r",
+									"        pm.expect(status).to.have.property(\"Id\").that.is.a(\"number\");\r",
+									"        pm.expect(status).to.have.property(\"StatusGroupId\").that.is.a(\"number\");\r",
+									"        pm.expect(status).to.have.property(\"StatusId\").that.is.a(\"number\");\r",
+									"        pm.expect(status).to.have.property(\"BackgroundColor\").that.is.a(\"string\");\r",
+									"        pm.expect(status).to.have.property(\"FontColor\").that.is.a(\"string\");\r",
+									"        pm.expect(status).to.have.property(\"OrderNumber\").that.is.a(\"number\");\r",
+									"        pm.expect(status).to.have.property(\"IsMandatory\").that.is.a(\"boolean\");\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"// Test 3: Check if specific StatusId exists\r",
+									"pm.test(\"Check if specific StatusIds exist\", function () {\r",
+									"    const statusIds = jsonData.map(status => status.StatusId);\r",
+									"    pm.expect(statusIds).to.include(3);  // Check if StatusId 3 is in the list\r",
+									"    pm.expect(statusIds).to.include(9);  // Check if StatusId 9 is in the list\r",
+									"    pm.expect(statusIds).to.include(25);  // Check if StatusId 25 is in the list\r",
+									"});\r",
+									"\r",
+									"// Test 4: Ensure that StatusId is neither null nor undefined\r",
+									"jsonData.forEach(function(status) {\r",
+									"    pm.test(`Ensure StatusId is not null or undefined for StatusId: ${status.StatusId}`, function () {\r",
+									"        pm.expect(status.StatusId).to.not.be.null;\r",
+									"        pm.expect(status.StatusId).to.not.be.undefined;\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjQxRUYwQTlENTEzNzEyOTNBNjI1QTU5NUQzQUVGRDdEMDczMjBDODRSUzI1NiIsInR5cCI6ImF0K2p3dCIsIng1dCI6IlFlOEtuVkUzRXBPbUphV1YwNjc5ZlFjeURJUSJ9.eyJuYmYiOjE3NDQzNDUzNzEsImV4cCI6MTc0NDcwNTM3MSwiaXNzIjoiaHR0cHM6Ly9pZHBxYXYyLnlvdXJkcnMuY29tIiwiYXVkIjpbInlvdXJkcnNhcGkiLCJ5b3VyZHJzaWRwYXBpIiwieW91cmRyc3N5Y3dlYnNlcnZpY2UiXSwiY2xpZW50X2lkIjoieW91cmRycy5pbnRlcmFjdGl2ZS5wdWJsaWMud2ViLnFhdjIiLCJzdWIiOiI4OTIwIiwiYXV0aF90aW1lIjoxNzQ0MzQ1MzYyLCJpZHAiOiJsb2NhbCIsInJvbGUiOiIxLDQsODMiLCJhbGxvd2VkZG9tYWluIjoicWFmLnlvdXJkcnMuY29tIiwiYXNzb2NpYXRlZGJ1c2luZXNzY2xpZW50cyI6Ilt7XCJidXNpbmVzc2NsaWVudHVuaXF1ZWlkXCI6XCJlYjRkYjkwY1wiLFwiYnVzaW5lc3NjbGllbnRtZW1iZXJpZFwiOjg5MjAsXCJidXNpbmVzc2NsaWVudG5hbWVcIjpcIkhlYWx0aCBFYXN0XCIsXCJzdWJkb21pblwiOlwicWFmLnlvdXJkcnMuY29tXCJ9XSIsImJ1c2luZXNzY2xpZW50dW5pcXVlaWQiOiJlYjRkYjkwYyIsInVuYW1lIjoiUUFUZWFtQHlkLmNvbSIsIm9wZW50b2thcGlrZXkiOiI0Nzg1MDkwMSIsInVwZG94ZmF4bnVtYmVyIjoiODg4NDQwNDU5OCIsImp0aSI6IjJDNjVGNDVFODFGRTY1QzQ4NkFGNDc0MUM3MjVFNjlBIiwic2lkIjoiQzU1NjQ3NTIyMzFFMjEyRjBDNDMxNDMyOTJDNzYxMTUiLCJpYXQiOjE3NDQzNDUzNzEsInNjb3BlIjpbIm9wZW5pZCIsInByb2ZpbGUiLCJlbWFpbCIsInlvdXJkcnNhcGlzY29wZSIsInlvdXJkcnNpZHBhcGlzY29wZSIsInlvdXJkcnNzeWN3ZWJzZXJ2aWNlc2NvcGUiLCJvZmZsaW5lX2FjY2VzcyJdLCJhbXIiOlsicHdkIl19.opa8uan6OBKG2--QLe0Cc8wBwh1OAqBJuPn2yzPkfhMEXzpb9VG2Qk4ROYgPR9XmJ190TiVcLOARf2HRWS4xCx8-8aiUsE7RM6XWR4w2dUUT54Os4Fa6RMn_SWEs5i2fBeuoG5N_2bSs9gInh7SW6ZgxrvmCOxa79GJ2pI7ufhtSkwtD57iklxTVJ47IYWD0rBE7LY-jMIoheCf2j4KLY7rZI6suG1AELzfG_ytiR9NaS89KIK3OCxKIAf6VUDr7QiKzb8qvMwIU2NYky1DJgqB14MuPvFHYv4XFqRl3dqA_kctiDf000a1aeTzilfz-yNSzCC0eJfA0mK8zBWzfnk1oTvrkVlyzokPXuh5qSm-5mC4ujb1j91iG2MDB3IRNFGWdb8CRNieuqGuvFsjREWBCGpRPQFIlLBcQEjphBULk-2JPCrAlFLQt32Tn99LHqApCByZX2X0VDdhQrsORl4C0tsSmAED-1QEFulmZE8xij6T-pw7n8CBt4Sn4xhafEQQdvdYjT96x2SSSSRE3ty1bYxc3153wgZUs8ReCO8YUnHsZ4pVEbY1AqYlRt1pcne23FBbnJl9DVniUuoolmWaeg9jBrW9mJDJRNZgf6HT2qbA1DVbHCukMgmsRMLMGddy06mRhqHs6rFJB11-cjraMiMKEGNyNvEXw334Qz-w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/ehr/Scheduler/Statuses",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ehr",
+								"Scheduler",
+								"Statuses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetAppontmentMemberStatuses",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"//  Status code check\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"// Log the entire response to the Postman console for debugging\r",
+									"console.log(\"Full Response:\", JSON.stringify(jsonData, null, 2));\r",
+									"\r",
+									"// Test 1: Check if 'Statuses' exists and is an array\r",
+									"pm.test(\"Check if response is an array and not empty\", function () {\r",
+									"    pm.expect(jsonData).to.be.an(\"array\").that.is.not.empty;\r",
+									"});\r",
+									"\r",
+									"// Test 2: Validate the structure of each status object\r",
+									"jsonData.forEach(function(status) {\r",
+									"    pm.test(`Validate Status fields for StatusId: ${status.StatusId}`, function () {\r",
+									"        pm.expect(status).to.have.property(\"Id\").that.is.a(\"number\");\r",
+									"        pm.expect(status).to.have.property(\"MemberId\").that.is.a(\"number\");\r",
+									"        pm.expect(status).to.have.property(\"StatusGroupId\").that.is.a(\"number\");\r",
+									"        pm.expect(status).to.have.property(\"StatusId\").that.is.a(\"number\");\r",
+									"        pm.expect(status).to.have.property(\"OrderNumber\").that.is.a(\"number\");\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"// Test 3: Check if specific StatusIds exist\r",
+									"pm.test(\"Check if specific StatusIds exist\", function () {\r",
+									"    const statusIds = jsonData.map(status => status.StatusId);\r",
+									"    pm.expect(statusIds).to.include(3);  // Check if StatusId 3 is in the list\r",
+									"    pm.expect(statusIds).to.include(9);  // Check if StatusId 9 is in the list\r",
+									"    pm.expect(statusIds).to.include(114);  // Check if StatusId 114 is in the list\r",
+									"    pm.expect(statusIds).to.include(38);  // Check if StatusId 38 is in the list\r",
+									"    pm.expect(statusIds).to.include(17);  // Check if StatusId 17 is in the list\r",
+									"});\r",
+									"\r",
+									"// Test 4: Ensure that StatusId is neither null nor undefined\r",
+									"jsonData.forEach(function(status) {\r",
+									"    pm.test(`Ensure StatusId is not null or undefined for StatusId: ${status.StatusId}`, function () {\r",
+									"        pm.expect(status.StatusId).to.not.be.null;\r",
+									"        pm.expect(status.StatusId).to.not.be.undefined;\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/ehr/AppointmentDashboard/Member/Statuses",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ehr",
+								"AppointmentDashboard",
+								"Member",
+								"Statuses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetAppointmentToolTipInformation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"//  Test if 'PatientPhones' is an array and empty\r",
+									"pm.test(\"PatientPhones should be an empty array\", function () {\r",
+									"    pm.expect(jsonData.PatientPhones).to.be.an(\"array\").that.is.empty;\r",
+									"});\r",
+									"\r",
+									"//  Test if 'CaseNotes' is an array and empty\r",
+									"pm.test(\"CaseNotes should be an empty array\", function () {\r",
+									"    pm.expect(jsonData.CaseNotes).to.be.an(\"array\").that.is.empty;\r",
+									"});\r",
+									"\r",
+									"//  Test if 'Alerts' exists and has correct properties\r",
+									"pm.test(\"Alerts should exist and have proper structure\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"Alerts\");\r",
+									"    pm.expect(jsonData.Alerts).to.have.property(\"EpisodePatientAlert\").that.is.an(\"array\");\r",
+									"    pm.expect(jsonData.Alerts).to.have.property(\"PagingInfo\").that.is.an(\"object\");\r",
+									"    pm.expect(jsonData.Alerts.PagingInfo).to.have.property(\"TotalItems\").that.is.a(\"number\");\r",
+									"    pm.expect(jsonData.Alerts.PagingInfo).to.have.property(\"ItemsPerPage\").that.is.a(\"number\");\r",
+									"    pm.expect(jsonData.Alerts.PagingInfo).to.have.property(\"CurrentPage\").that.is.a(\"number\");\r",
+									"});\r",
+									"\r",
+									"//  Ensure PagingInfo values are correct (for example, TotalItems, ItemsPerPage, CurrentPage should be 0)\r",
+									"pm.test(\"PagingInfo values should be correct\", function () {\r",
+									"    pm.expect(jsonData.Alerts.PagingInfo.TotalItems).to.eql(0);\r",
+									"    pm.expect(jsonData.Alerts.PagingInfo.ItemsPerPage).to.eql(0);\r",
+									"    pm.expect(jsonData.Alerts.PagingInfo.CurrentPage).to.eql(1);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/ehr/AppointmentDashboard/ToolTipInformation",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ehr",
+								"AppointmentDashboard",
+								"ToolTipInformation"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Provider DB",
+			"item": [
+				{
+					"name": "GetFieldsProviderDB",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"//  Status code check\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"//  Test if the response contains 'DashboardDisplayFields' and is an array\r",
+									"pm.test(\"DashboardDisplayFields should be an array\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"DashboardDisplayFields\");\r",
+									"    pm.expect(jsonData.DashboardDisplayFields).to.be.an(\"array\").that.is.not.empty;\r",
+									"});\r",
+									"\r",
+									"//  Test if the first item in 'DashboardDisplayFields' has the expected properties\r",
+									"const firstField = jsonData.DashboardDisplayFields[0];\r",
+									"\r",
+									"pm.test(\"Validate first DashboardDisplayFields item\", function () {\r",
+									"    pm.expect(firstField).to.have.property(\"IsDef\").that.is.a(\"number\").and.eql(1);\r",
+									"    pm.expect(firstField).to.have.property(\"DisplayName\").that.is.a(\"string\").and.eql(\"Patient Name\");\r",
+									"    pm.expect(firstField).to.have.property(\"MasterDataGroupId\").that.is.a(\"number\").and.eql(0);\r",
+									"    pm.expect(firstField).to.have.property(\"DataSource\").that.is.a(\"string\").and.eql(\"\");\r",
+									"    pm.expect(firstField).to.have.property(\"FId\").that.is.a(\"number\").and.eql(1);\r",
+									"    pm.expect(firstField).to.have.property(\"Ord\").that.is.a(\"number\").and.eql(1);\r",
+									"});\r",
+									"\r",
+									"//  Check if 'Id' and 'DashboardId' are present and are numbers\r",
+									"pm.test(\"Validate Id and DashboardId\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"Id\").that.is.a(\"number\").and.eql(2);\r",
+									"    pm.expect(jsonData).to.have.property(\"DashboardId\").that.is.a(\"number\").and.eql(2);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/ehr/Dashboard/2/Fields",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ehr",
+								"Dashboard",
+								"2",
+								"Fields"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetMembersProviderDB",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"//  Status code check\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Test if the response contains 'Member' and it is an array\r",
+									"pm.test(\"Member should be an array\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"Member\");\r",
+									"    pm.expect(jsonData.Member).to.be.an(\"array\").that.is.not.empty;\r",
+									"});\r",
+									"\r",
+									"// Test the properties of the first Member in the array\r",
+									"const member = jsonData.Member[0];\r",
+									"\r",
+									"pm.test(\"Validate first member details\", function () {\r",
+									"    pm.expect(member).to.have.property(\"MemberId\").that.is.a(\"number\").and.eql(11327);\r",
+									"    pm.expect(member).to.have.property(\"DisplayName\").that.is.a(\"string\").and.eql(\"Abhishek Kumar\");\r",
+									"    pm.expect(member).to.have.property(\"ShortName\").that.is.a(\"string\").and.eql(\"Dr Kumar\");\r",
+									"    pm.expect(member).to.have.property(\"GenderId\").that.is.a(\"number\").and.eql(1);\r",
+									"    pm.expect(member).to.have.property(\"EmailAddress\").that.is.a(\"string\").and.eql(\"AbhishekKumar@yd.com\");\r",
+									"    pm.expect(member).to.have.property(\"Reasons\").that.is.a(\"string\").and.eql(\"reh\");\r",
+									"    pm.expect(member).to.have.property(\"IsAccountLocked\").that.is.a(\"boolean\").and.eql(false);\r",
+									"    pm.expect(member).to.have.property(\"IsAccountSuspended\").that.is.a(\"boolean\").and.eql(false);\r",
+									"    pm.expect(member).to.have.property(\"ProfilePhoto\").that.is.a(\"string\").and.eql(\"images_aZrASMYAfu.jpg\");\r",
+									"    pm.expect(member).to.have.property(\"IsActive\").that.is.a(\"boolean\").and.eql(true);\r",
+									"});\r",
+									"\r",
+									"// Test that 'DOB' property is either null or a valid date\r",
+									"pm.test(\"DOB should be null or a valid date\", function () {\r",
+									"    const dob = member.DOB;\r",
+									"    // If DOB is not null, it should be a valid date string\r",
+									"    if (dob !== null) {\r",
+									"        pm.expect(dob).to.be.a(\"string\").that.match(/\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}/);\r",
+									"    } else {\r",
+									"        pm.expect(dob).to.be.null;\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/ehr/Member?SearchRoleCategoryIds=36",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ehr",
+								"Member"
+							],
+							"query": [
+								{
+									"key": "SearchRoleCategoryIds",
+									"value": "36"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetFavFiltersProviderDB",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Log the response to understand the structure\r",
+									"const jsonData = pm.response.json();\r",
+									"console.log(jsonData);  // This will print the entire response data to the console\r",
+									"\r",
+									"\r",
+									"//  Status code check\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"//  Check if required properties exist\r",
+									"pm.test(\"Check if required properties exist\", function () {\r",
+									"    // Verify if the properties exist at the correct level\r",
+									"    pm.expect(jsonData[0]).to.have.property('Id').that.is.a('number');\r",
+									"    pm.expect(jsonData[0]).to.have.property('DashboardId').that.is.a('number');\r",
+									"    pm.expect(jsonData[0]).to.have.property('MemberId').that.is.a('number');\r",
+									"    pm.expect(jsonData[0]).to.have.property('FilterName').that.is.a('string');\r",
+									"    pm.expect(jsonData[0]).to.have.property('FilterValues').that.is.an('array');\r",
+									"    pm.expect(jsonData[0]).to.have.property('IsActive').that.is.a('boolean');\r",
+									"    pm.expect(jsonData[0]).to.have.property('IsDefaultFilter').that.is.a('boolean');\r",
+									"});\r",
+									"\r",
+									"// Test if the FilterValues array exists and is not empty\r",
+									"pm.test(\"FilterValues should be an array and not empty\", function () {\r",
+									"    pm.expect(jsonData[0].FilterValues).to.be.an(\"array\").that.is.not.empty;\r",
+									"});\r",
+									"\r",
+									"//  Check each FilterValue object within the FilterValues array\r",
+									"pm.test(\"Each FilterValue should contain FId and Value\", function () {\r",
+									"    if (jsonData[0].FilterValues && jsonData[0].FilterValues.length > 0) {\r",
+									"        jsonData[0].FilterValues.forEach(function (filterValue) {\r",
+									"            pm.expect(filterValue).to.have.property('FId').that.is.a('number');\r",
+									"            pm.expect(filterValue).to.have.property('Value').that.is.a('string');\r",
+									"        });\r",
+									"    } else {\r",
+									"        pm.expect.fail(\"FilterValues array is empty or undefined\");\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"//  Test if IsActive is true\r",
+									"pm.test(\"IsActive should be true\", function () {\r",
+									"    pm.expect(jsonData[0].IsActive).to.eql(true);\r",
+									"});\r",
+									"\r",
+									"//  Test if IsDefaultFilter is false\r",
+									"pm.test(\"IsDefaultFilter should be false\", function () {\r",
+									"    pm.expect(jsonData[0].IsDefaultFilter).to.eql(false);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/ehr/Dashboard/2/FavoriteFilters",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ehr",
+								"Dashboard",
+								"2",
+								"FavoriteFilters"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetFormConfigurationProviderDB",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Log the response to understand the structure\r",
+									"const jsonData = pm.response.json();\r",
+									"console.log(jsonData);  // This will print the entire response data to the console\r",
+									"\r",
+									"//  Status code check\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Check if required properties exist\r",
+									"pm.test(\"Check if required properties exist\", function () {\r",
+									"    pm.expect(jsonData).to.have.property('Id').that.is.a('number');\r",
+									"    pm.expect(jsonData).to.have.property('DashboardId').that.is.a('number');\r",
+									"    pm.expect(jsonData).to.have.property('SelectedDisplayFields').that.is.an('array');\r",
+									"    pm.expect(jsonData).to.have.property('SelectedFilterFields').that.is.an('array');\r",
+									"});\r",
+									"\r",
+									"// Validate that SelectedDisplayFields is not empty\r",
+									"pm.test(\"SelectedDisplayFields should be an array and not empty\", function () {\r",
+									"    pm.expect(jsonData.SelectedDisplayFields).to.be.an(\"array\").that.is.not.empty;\r",
+									"});\r",
+									"\r",
+									"// Validate that SelectedFilterFields is not empty\r",
+									"pm.test(\"SelectedFilterFields should be an array and not empty\", function () {\r",
+									"    pm.expect(jsonData.SelectedFilterFields).to.be.an(\"array\").that.is.not.empty;\r",
+									"});\r",
+									"\r",
+									"// Validate each object in SelectedDisplayFields contains FId and Ord\r",
+									"pm.test(\"Each SelectedDisplayField should contain FId and Ord\", function () {\r",
+									"    jsonData.SelectedDisplayFields.forEach(function (field) {\r",
+									"        pm.expect(field).to.have.property('FId').that.is.a('number');\r",
+									"        pm.expect(field).to.have.property('Ord').that.is.a('number');\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"// Validate each object in SelectedFilterFields contains FId and Ord\r",
+									"pm.test(\"Each SelectedFilterField should contain FId and Ord\", function () {\r",
+									"    jsonData.SelectedFilterFields.forEach(function (field) {\r",
+									"        pm.expect(field).to.have.property('FId').that.is.a('number');\r",
+									"        pm.expect(field).to.have.property('Ord').that.is.a('number');\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/ehr/Member/Dashboard/2/Fields",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ehr",
+								"Member",
+								"Dashboard",
+								"2",
+								"Fields"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetSummaryCountProviderDB",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the response JSON\r",
+									"const jsonData = pm.response.json();\r",
+									"console.log(jsonData);  // Log the response to inspect its structure\r",
+									"\r",
+									"//  Status code check\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"//  Check if all properties exist and are numbers\r",
+									"pm.test(\"Check if all required properties are present and are numbers\", function () {\r",
+									"    pm.expect(jsonData).to.have.property('CheckedOutAppointments').that.is.a('number');\r",
+									"    pm.expect(jsonData).to.have.property('CancelledAppointments').that.is.a('number');\r",
+									"    pm.expect(jsonData).to.have.property('RequestedAppointments').that.is.a('number');\r",
+									"    pm.expect(jsonData).to.have.property('PendingDictationApproval').that.is.a('number');\r",
+									"    pm.expect(jsonData).to.have.property('DictationPending').that.is.a('number');\r",
+									"    pm.expect(jsonData).to.have.property('SuperBillCount').that.is.a('number');\r",
+									"});\r",
+									"\r",
+									"//  Check if the values are non-negative integers (since they represent counts)\r",
+									"pm.test(\"Ensure all counts are non-negative\", function () {\r",
+									"    pm.expect(jsonData.CheckedOutAppointments).to.be.at.least(0);\r",
+									"    pm.expect(jsonData.CancelledAppointments).to.be.at.least(0);\r",
+									"    pm.expect(jsonData.RequestedAppointments).to.be.at.least(0);\r",
+									"    pm.expect(jsonData.PendingDictationApproval).to.be.at.least(0);\r",
+									"    pm.expect(jsonData.DictationPending).to.be.at.least(0);\r",
+									"    pm.expect(jsonData.SuperBillCount).to.be.at.least(0);\r",
+									"});\r",
+									"\r",
+									"//  Ensure that DictationPending and PendingDictationApproval are not negative\r",
+									"pm.test(\"Ensure Dictation counts are not negative\", function () {\r",
+									"    pm.expect(jsonData.DictationPending).to.be.at.least(0);\r",
+									"    pm.expect(jsonData.PendingDictationApproval).to.be.at.least(0);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://apiqav2.yourdrs.com/v1/ehr/ProviderDashboard/GetSummaryCounts?AppointmentFromDate=2025-04-11",
+							"protocol": "https",
+							"host": [
+								"apiqav2",
+								"yourdrs",
+								"com"
+							],
+							"path": [
+								"v1",
+								"ehr",
+								"ProviderDashboard",
+								"GetSummaryCounts"
+							],
+							"query": [
+								{
+									"key": "AppointmentFromDate",
+									"value": "2025-04-11"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "PHS",
+			"item": [
+				{
+					"name": "CaseDetails Tab",
+					"item": [
+						{
+							"name": "PatientDetails",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/ehr/Patient?PatientIds=122932",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"ehr",
+										"Patient"
+									],
+									"query": [
+										{
+											"key": "PatientIds",
+											"value": "122932"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "EpisodeDetails",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/ehr/Episode?PatientIds=122932",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"ehr",
+										"Episode"
+									],
+									"query": [
+										{
+											"key": "PatientIds",
+											"value": "122932"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PatientPhones",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/ehr/Patient/Phones?PatientIds=122932",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"ehr",
+										"Patient",
+										"Phones"
+									],
+									"query": [
+										{
+											"key": "PatientIds",
+											"value": "122932"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "AuthorizationContactModes",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/ehr/Patient/122932/AuthorizationContactModes",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"ehr",
+										"Patient",
+										"122932",
+										"AuthorizationContactModes"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "EpisodeAlerts",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/ehr/Episode/129367/Alert?page=0",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"ehr",
+										"Episode",
+										"129367",
+										"Alert"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "0"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Documents1",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/ehr/Episode/Document?EpisodeId=129367&DocumentFolderIds=3&DocumentTypeIds&ProviderId&CreationFromDate=&CreationToDate=&TreatmentFromDate=&TreatmentToDate=&GetDeletedDocuments=false&Page=0",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"ehr",
+										"Episode",
+										"Document"
+									],
+									"query": [
+										{
+											"key": "EpisodeId",
+											"value": "129367"
+										},
+										{
+											"key": "DocumentFolderIds",
+											"value": "3"
+										},
+										{
+											"key": "DocumentTypeIds",
+											"value": null
+										},
+										{
+											"key": "ProviderId",
+											"value": null
+										},
+										{
+											"key": "CreationFromDate",
+											"value": ""
+										},
+										{
+											"key": "CreationToDate",
+											"value": ""
+										},
+										{
+											"key": "TreatmentFromDate",
+											"value": ""
+										},
+										{
+											"key": "TreatmentToDate",
+											"value": ""
+										},
+										{
+											"key": "GetDeletedDocuments",
+											"value": "false"
+										},
+										{
+											"key": "Page",
+											"value": "0"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Documents2",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/ehr/Episode/Document?EpisodeId=129367&DocumentFolderIds=5&DocumentTypeIds&ProviderId&CreationFromDate=&CreationToDate=&TreatmentFromDate=&TreatmentToDate=&GetDeletedDocuments=false&Page=0",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"ehr",
+										"Episode",
+										"Document"
+									],
+									"query": [
+										{
+											"key": "EpisodeId",
+											"value": "129367"
+										},
+										{
+											"key": "DocumentFolderIds",
+											"value": "5"
+										},
+										{
+											"key": "DocumentTypeIds",
+											"value": null
+										},
+										{
+											"key": "ProviderId",
+											"value": null
+										},
+										{
+											"key": "CreationFromDate",
+											"value": ""
+										},
+										{
+											"key": "CreationToDate",
+											"value": ""
+										},
+										{
+											"key": "TreatmentFromDate",
+											"value": ""
+										},
+										{
+											"key": "TreatmentToDate",
+											"value": ""
+										},
+										{
+											"key": "GetDeletedDocuments",
+											"value": "false"
+										},
+										{
+											"key": "Page",
+											"value": "0"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Documents3",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/ehr/Episode/Document?EpisodeId=129367&DocumentFolderIds=5&DocumentTypeIds&ProviderId&CreationFromDate=&CreationToDate=&TreatmentFromDate=&TreatmentToDate=&GetDeletedDocuments=false&Page=0",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"ehr",
+										"Episode",
+										"Document"
+									],
+									"query": [
+										{
+											"key": "EpisodeId",
+											"value": "129367"
+										},
+										{
+											"key": "DocumentFolderIds",
+											"value": "5"
+										},
+										{
+											"key": "DocumentTypeIds",
+											"value": null
+										},
+										{
+											"key": "ProviderId",
+											"value": null
+										},
+										{
+											"key": "CreationFromDate",
+											"value": ""
+										},
+										{
+											"key": "CreationToDate",
+											"value": ""
+										},
+										{
+											"key": "TreatmentFromDate",
+											"value": ""
+										},
+										{
+											"key": "TreatmentToDate",
+											"value": ""
+										},
+										{
+											"key": "GetDeletedDocuments",
+											"value": "false"
+										},
+										{
+											"key": "Page",
+											"value": "0"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "AppointmentCountsByType",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/ehr/Appointment/AppointmentCountsByType?EpisodeId=129367",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"ehr",
+										"Appointment",
+										"AppointmentCountsByType"
+									],
+									"query": [
+										{
+											"key": "EpisodeId",
+											"value": "129367"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Compliance",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/ehr/Episode/129367/Compliance",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"ehr",
+										"Episode",
+										"129367",
+										"Compliance"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "AppointmentsList",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/ehr/Appointment?EpisodeIds=129367&Page=1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"ehr",
+										"Appointment"
+									],
+									"query": [
+										{
+											"key": "EpisodeIds",
+											"value": "129367"
+										},
+										{
+											"key": "Page",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "ERxMedicationManagement",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/ehr/ERxMedicationManagement?PatientId=122932",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"ehr",
+										"ERxMedicationManagement"
+									],
+									"query": [
+										{
+											"key": "PatientId",
+											"value": "122932"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PatientAlerts",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/ehr/Patient/122932/Alert?page=0",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"ehr",
+										"Patient",
+										"122932",
+										"Alert"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "0"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "My Transcription",
+			"item": [
+				{
+					"name": "GetTranscriptionDictationFiles",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the response JSON\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"// Basic existence test\r",
+									"pm.test(\"TranscriptionDetail should be present and not empty\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"TranscriptionDetail\").that.is.an(\"array\").and.not.empty;\r",
+									"});\r",
+									"\r",
+									"// Grab the first transcription entry\r",
+									"const transcription = jsonData.TranscriptionDetail[0];\r",
+									"\r",
+									"// Validate key fields\r",
+									"pm.test(\"Validate required fields in first TranscriptionDetail entry\", function () {\r",
+									"    pm.expect(transcription).to.have.property(\"CaseNumber\").that.is.a(\"string\");\r",
+									"    pm.expect(transcription).to.have.property(\"PatientFirstName\").that.is.a(\"string\").and.eql(\"Charlie\");\r",
+									"    pm.expect(transcription).to.have.property(\"PatientLastName\").that.is.a(\"string\").and.eql(\"Arellano\");\r",
+									"    pm.expect(transcription).to.have.property(\"ProviderFirstName\").that.is.a(\"string\");\r",
+									"    pm.expect(transcription).to.have.property(\"ProviderId\").that.is.a(\"number\");\r",
+									"    pm.expect(transcription).to.have.property(\"IsActive\").that.is.a(\"number\").and.eql(1);\r",
+									"});\r",
+									"\r",
+									"// Optional: Log important info in console\r",
+									"console.log(\"Patient Name:\", transcription.PatientFirstName, transcription.PatientLastName);\r",
+									"console.log(\"Provider:\", transcription.ProviderFirstName, transcription.ProviderLastName);\r",
+									"console.log(\"Case Number:\", transcription.CaseNumber);\r",
+									"console.log(\"Document:\", transcription.PhysicalFileName);\r",
+									"\r",
+									"// Optional: Save values as environment variables\r",
+									"pm.environment.set(\"CaseNumber\", transcription.CaseNumber);\r",
+									"pm.environment.set(\"EpisodeId\", transcription.EpisodeId);\r",
+									"pm.environment.set(\"AppointmentId\", transcription.AppointmentId);\r",
+									"pm.environment.set(\"ProviderName\", `${transcription.ProviderFirstName} ${transcription.ProviderLastName}`);\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/ehr/Transcription?IsArchived=0&UploadSourceTypeId&DictationTypeId&StatusId=107%2C117%2C118%2C119%2C120%2C121%2C122%2C123%2C124%2C125%2C126%2C130%2C131%2C132&IsStatFile&PracticeId=81&LocationId&ProviderId&AppointmentStartDate=2025-04-01&AppointmentEndDate=2025-04-30&AppointmentTypeId&CaseNumber&AccountNumber&PatientName&PatientGenderId&CreatedBy&Page=1&CreatedStartDate&CreatedEndDate\n\n",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ehr",
+								"Transcription"
+							],
+							"query": [
+								{
+									"key": "IsArchived",
+									"value": "0"
+								},
+								{
+									"key": "UploadSourceTypeId",
+									"value": null
+								},
+								{
+									"key": "DictationTypeId",
+									"value": null
+								},
+								{
+									"key": "StatusId",
+									"value": "107%2C117%2C118%2C119%2C120%2C121%2C122%2C123%2C124%2C125%2C126%2C130%2C131%2C132"
+								},
+								{
+									"key": "IsStatFile",
+									"value": null
+								},
+								{
+									"key": "PracticeId",
+									"value": "81"
+								},
+								{
+									"key": "LocationId",
+									"value": null
+								},
+								{
+									"key": "ProviderId",
+									"value": null
+								},
+								{
+									"key": "AppointmentStartDate",
+									"value": "2025-04-01"
+								},
+								{
+									"key": "AppointmentEndDate",
+									"value": "2025-04-30"
+								},
+								{
+									"key": "AppointmentTypeId",
+									"value": null
+								},
+								{
+									"key": "CaseNumber",
+									"value": null
+								},
+								{
+									"key": "AccountNumber",
+									"value": null
+								},
+								{
+									"key": "PatientName",
+									"value": null
+								},
+								{
+									"key": "PatientGenderId",
+									"value": null
+								},
+								{
+									"key": "CreatedBy",
+									"value": null
+								},
+								{
+									"key": "Page",
+									"value": "1"
+								},
+								{
+									"key": "CreatedStartDate",
+									"value": null
+								},
+								{
+									"key": "CreatedEndDate\n\n",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetDictationAudio",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the JSON response\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"//  Check if it's a non-empty array\r",
+									"pm.test(\"Response is a non-empty array\", function () {\r",
+									"    pm.expect(jsonData).to.be.an(\"array\").that.is.not.empty;\r",
+									"});\r",
+									"\r",
+									"//  Access first item\r",
+									"const file = jsonData[0];\r",
+									"\r",
+									"// Validate properties\r",
+									"pm.test(\"First item has expected properties\", function () {\r",
+									"    pm.expect(file).to.have.property(\"TranscriptionId\").that.is.a(\"number\");\r",
+									"    pm.expect(file).to.have.property(\"PhysicalName\").that.is.a(\"string\");\r",
+									"    pm.expect(file).to.have.property(\"IsAddendum\").that.is.a(\"boolean\");\r",
+									"});\r",
+									"\r",
+									"//  Log details for debug\r",
+									"console.log(\"Transcription File:\", file.PhysicalName);\r",
+									"console.log(\"Is Addendum?\", file.IsAddendum);\r",
+									"\r",
+									"// Save for use in later requests\r",
+									"pm.environment.set(\"TranscriptionId\", file.TranscriptionId);\r",
+									"pm.environment.set(\"PhysicalName\", file.PhysicalName);\r",
+									"pm.environment.set(\"IsAddendum\", file.IsAddendum.toString()); // Stored as string for safety\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/ehr/DictationAudio?TranscriptionId=732242",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ehr",
+								"DictationAudio"
+							],
+							"query": [
+								{
+									"key": "TranscriptionId",
+									"value": "732242"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetSignedUrl",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the response\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"//  Check that SignedUrl and FileName are present\r",
+									"pm.test(\"Signed URL and FileName are present\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"SignedUrl\").that.is.a(\"string\").and.includes(\"https://\");\r",
+									"    pm.expect(jsonData).to.have.property(\"FileName\").that.is.a(\"string\").and.match(/\\.docx$/);\r",
+									"});\r",
+									"\r",
+									"//  Log to console for debugging\r",
+									"console.log(\"Download URL:\", jsonData.SignedUrl);\r",
+									"console.log(\"File Name:\", jsonData.FileName);\r",
+									"\r",
+									"//  Save as environment variables for chaining\r",
+									"pm.environment.set(\"SignedUrl\", jsonData.SignedUrl);\r",
+									"pm.environment.set(\"FileName\", jsonData.FileName);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/ehr/Transcription/SignedUrl?FileName=ArellanoCharlie_ScilarisThomas_04112025_4dad09e9-e03c-425e-9f61-11e761a93a14.docx&IsUpload=false\n",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ehr",
+								"Transcription",
+								"SignedUrl"
+							],
+							"query": [
+								{
+									"key": "FileName",
+									"value": "ArellanoCharlie_ScilarisThomas_04112025_4dad09e9-e03c-425e-9f61-11e761a93a14.docx"
+								},
+								{
+									"key": "IsUpload",
+									"value": "false\n"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Billing Dashboard",
+			"item": [
+				{
+					"name": "Billing",
+					"item": [
+						{
+							"name": "GetBillingFeeSchedules",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/rcm/Billing/FeeSchedules?id",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"rcm",
+										"Billing",
+										"FeeSchedules"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": null
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingMedicalReport",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"//  Validate fields exist and are proper types\r",
+											"pm.test(\"Signed PDF URL and FileName are present\", function () {\r",
+											"    pm.expect(jsonData).to.have.property(\"SignedUrl\").that.is.a(\"string\").and.includes(\"https://\");\r",
+											"    pm.expect(jsonData).to.have.property(\"FileName\").that.is.a(\"string\").and.match(/\\.pdf$/);\r",
+											"});\r",
+											"\r",
+											"//  Save to environment for future use\r",
+											"pm.environment.set(\"PDFSignedUrl\", jsonData.SignedUrl);\r",
+											"pm.environment.set(\"PDFFileName\", jsonData.FileName);\r",
+											"\r",
+											"//  Log for visibility\r",
+											"console.log(\"PDF Download Link:\", jsonData.SignedUrl);\r",
+											"console.log(\"PDF File Name:\", jsonData.FileName);\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/ehr/Transcription/DownloadReport?TranscriptionId&AppointmentId=939777\n",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"ehr",
+										"Transcription",
+										"DownloadReport"
+									],
+									"query": [
+										{
+											"key": "TranscriptionId",
+											"value": null
+										},
+										{
+											"key": "AppointmentId",
+											"value": "939777\n"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingFormConfigurationData",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"//  Check the status code is 200 (OK)\r",
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"//  Validate specific fields in the response\r",
+											"pm.test(\"Check if response contains expected fields\", function () {\r",
+											"    pm.expect(jsonData).to.have.property(\"CaseTypeIds\");\r",
+											"    pm.expect(jsonData).to.have.property(\"FormCategoriesId\").that.equals(5);\r",
+											"    pm.expect(jsonData).to.have.property(\"FormCategorieMenuId\").that.equals(26);\r",
+											"    pm.expect(jsonData).to.have.property(\"FormTypeId\").that.equals(2);\r",
+											"    pm.expect(jsonData).to.have.property(\"DashboardId\").that.equals(10);\r",
+											"    pm.expect(jsonData).to.have.property(\"PracticeId\").that.equals(57);\r",
+											"    pm.expect(jsonData).to.have.property(\"LocationId\").that.equals(0);\r",
+											"    pm.expect(jsonData).to.have.property(\"ProviderId\").that.equals(0);\r",
+											"    pm.expect(jsonData).to.have.property(\"AppointmentTypeId\").that.equals(0);\r",
+											"    pm.expect(jsonData).to.have.property(\"FormFrequencyId\").that.equals(2);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/rcm/Billing/FormConfigData?BillingFormId=1\n",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"rcm",
+										"Billing",
+										"FormConfigData"
+									],
+									"query": [
+										{
+											"key": "BillingFormId",
+											"value": "1\n"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingDynamicForms",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"//  Check the status code is 200 (OK)\r",
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"//  Validate the FormConfigurations array is present\r",
+											"pm.test(\"FormConfigurations array is present\", function () {\r",
+											"    pm.expect(jsonData).to.have.property(\"FormConfigurations\");\r",
+											"    pm.expect(jsonData.FormConfigurations).to.be.an(\"array\").that.is.not.empty;\r",
+											"});\r",
+											"\r",
+											"//  Check if the first form configuration has the expected properties\r",
+											"const firstFormConfig = jsonData.FormConfigurations[0];\r",
+											"\r",
+											"pm.test(\"Validate first FormConfiguration\", function () {\r",
+											"    pm.expect(firstFormConfig).to.have.property(\"Id\").that.equals(179);\r",
+											"    pm.expect(firstFormConfig).to.have.property(\"PracticeId\").that.equals(57);\r",
+											"    pm.expect(firstFormConfig).to.have.property(\"LocationId\").that.is.null;\r",
+											"    pm.expect(firstFormConfig).to.have.property(\"CaseTypeIds\").that.is.null;\r",
+											"    pm.expect(firstFormConfig).to.have.property(\"AppointmentTypeIds\").that.is.null;\r",
+											"    pm.expect(firstFormConfig).to.have.property(\"ProviderIds\").that.is.null;\r",
+											"    pm.expect(firstFormConfig).to.have.property(\"ProcedureIds\").that.is.null;\r",
+											"    pm.expect(firstFormConfig).to.have.property(\"ProcedureTypeIds\").that.is.null;\r",
+											"    pm.expect(firstFormConfig).to.have.property(\"FormCategoriesId\").that.equals(0);\r",
+											"    pm.expect(firstFormConfig).to.have.property(\"FormCategoriesMenuId\").that.equals(0);\r",
+											"    pm.expect(firstFormConfig).to.have.property(\"FormTypesId\").that.equals(0);\r",
+											"    pm.expect(firstFormConfig).to.have.property(\"FormFrequencyId\").that.is.null;\r",
+											"    pm.expect(firstFormConfig).to.have.property(\"DashboardIds\").that.is.null;\r",
+											"});\r",
+											"\r",
+											"//  Check if the Procedures array is correctly structured\r",
+											"const firstProcedure = firstFormConfig.Procedures[0];\r",
+											"\r",
+											"pm.test(\"Validate Procedure array\", function () {\r",
+											"    pm.expect(firstProcedure).to.have.property(\"Id\").that.is.null;\r",
+											"    pm.expect(firstProcedure).to.have.property(\"ProcedureName\").that.is.null;\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/ehr/DynamicForms/Get?PracticeIds=57&LocationIds=0&CaseTypeIds=411&AppointmentTypeIds=6&ProviderIds=0&ProcedureIds=&ModifiedDate=&ProcedureTypeIds=&FormCategoriesId=5&FormCategoriesMenuId=26&FormTypesId=2&FormFrequencyId=&DashboardIds=10&IsAptInitiated=true",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"ehr",
+										"DynamicForms",
+										"Get"
+									],
+									"query": [
+										{
+											"key": "PracticeIds",
+											"value": "57"
+										},
+										{
+											"key": "LocationIds",
+											"value": "0"
+										},
+										{
+											"key": "CaseTypeIds",
+											"value": "411"
+										},
+										{
+											"key": "AppointmentTypeIds",
+											"value": "6"
+										},
+										{
+											"key": "ProviderIds",
+											"value": "0"
+										},
+										{
+											"key": "ProcedureIds",
+											"value": ""
+										},
+										{
+											"key": "ModifiedDate",
+											"value": ""
+										},
+										{
+											"key": "ProcedureTypeIds",
+											"value": ""
+										},
+										{
+											"key": "FormCategoriesId",
+											"value": "5"
+										},
+										{
+											"key": "FormCategoriesMenuId",
+											"value": "26"
+										},
+										{
+											"key": "FormTypesId",
+											"value": "2"
+										},
+										{
+											"key": "FormFrequencyId",
+											"value": ""
+										},
+										{
+											"key": "DashboardIds",
+											"value": "10"
+										},
+										{
+											"key": "IsAptInitiated",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingTranscriptionReport",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"//  Validate fields exist and are proper types\r",
+											"pm.test(\"Signed PDF URL and FileName are present\", function () {\r",
+											"    pm.expect(jsonData).to.have.property(\"SignedUrl\").that.is.a(\"string\").and.includes(\"https://\");\r",
+											"    pm.expect(jsonData).to.have.property(\"FileName\").that.is.a(\"string\").and.match(/\\.pdf$/);\r",
+											"});\r",
+											"\r",
+											"//  Save to environment for future use\r",
+											"pm.environment.set(\"PDFSignedUrl\", jsonData.SignedUrl);\r",
+											"pm.environment.set(\"PDFFileName\", jsonData.FileName);\r",
+											"\r",
+											"//  Log for visibility\r",
+											"console.log(\"PDF Download Link:\", jsonData.SignedUrl);\r",
+											"console.log(\"PDF File Name:\", jsonData.FileName);\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/ehr/Transcription/DownloadReport?TranscriptionId&AppointmentId=939777",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"ehr",
+										"Transcription",
+										"DownloadReport"
+									],
+									"query": [
+										{
+											"key": "TranscriptionId",
+											"value": null
+										},
+										{
+											"key": "AppointmentId",
+											"value": "939777"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetClaimCreatedByMembers",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"//  Validate that the response is an array and has valid objects\r",
+											"pm.test(\"Response is an array with valid objects\", function () {\r",
+											"    pm.expect(jsonData).to.be.an(\"array\");\r",
+											"    jsonData.forEach(function (item) {\r",
+											"        pm.expect(item).to.have.property(\"Id\").that.is.a(\"number\");\r",
+											"        pm.expect(item).to.have.property(\"Name\").that.is.a(\"string\");\r",
+											"    });\r",
+											"});\r",
+											"\r",
+											"//  Save the `Id` and `Name` of each user into environment variables\r",
+											"jsonData.forEach(function (item, index) {\r",
+											"    pm.environment.set(`UserId_${index + 1}`, item.Id);\r",
+											"    pm.environment.set(`UserName_${index + 1}`, item.Name);\r",
+											"    console.log(`User ${index + 1}: ID = ${item.Id}, Name = ${item.Name}`);\r",
+											"});\r",
+											"\r",
+											"// Example: Log the first user’s Id and Name\r",
+											"if (jsonData.length > 0) {\r",
+											"    console.log(\"First User: ID =\", jsonData[0].Id, \", Name =\", jsonData[0].Name);\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/rcm/Billing/Claim/CreatedByMembers",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"rcm",
+										"Billing",
+										"Claim",
+										"CreatedByMembers"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingModifiers",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"//  Validate that the response is an array and contains valid objects\r",
+											"pm.test(\"Response is an array with valid objects\", function () {\r",
+											"    pm.expect(jsonData).to.be.an(\"array\");\r",
+											"    jsonData.forEach(function (item) {\r",
+											"        pm.expect(item).to.have.property(\"Id\").that.is.a(\"number\");\r",
+											"        pm.expect(item).to.have.property(\"Modifier\").that.is.a(\"string\");\r",
+											"        pm.expect(item).to.have.property(\"Description\").that.is.a(\"string\");\r",
+											"        pm.expect(item).to.have.property(\"modifierdesc\").that.is.a(\"string\");\r",
+											"    });\r",
+											"});\r",
+											"\r",
+											"//  Save the `Id`, `Modifier`, and `modifierdesc` of each item into environment variables\r",
+											"jsonData.forEach(function (item, index) {\r",
+											"    pm.environment.set(`ModifierId_${index + 1}`, item.Id);\r",
+											"    pm.environment.set(`Modifier_${index + 1}`, item.Modifier);\r",
+											"    pm.environment.set(`ModifierDesc_${index + 1}`, item.modifierdesc);\r",
+											"    console.log(`Modifier ${index + 1}: ID = ${item.Id}, Modifier = ${item.Modifier}, Description = ${item.modifierdesc}`);\r",
+											"});\r",
+											"\r",
+											"// Example: Log the first modifier's details\r",
+											"if (jsonData.length > 0) {\r",
+											"    console.log(\"First Modifier: ID =\", jsonData[0].Id, \", Modifier =\", jsonData[0].Modifier, \", Description =\", jsonData[0].modifierdesc);\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/rcm/Billing/Modifiers",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"rcm",
+										"Billing",
+										"Modifiers"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingCPTCodeFee",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/rcm/Billing/CPTCodeFee",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"rcm",
+										"Billing",
+										"CPTCodeFee"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingMappedPayer",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/rcm/Billing/MappedePayer",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"rcm",
+										"Billing",
+										"MappedePayer"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingePayers",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/rcm/Billing/ePayers",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"rcm",
+										"Billing",
+										"ePayers"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingForms",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/rcm/Billing/Forms",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"rcm",
+										"Billing",
+										"Forms"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingFormConfigData",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/rcm/Billing/FormConfigData",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"rcm",
+										"Billing",
+										"FormConfigData"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingClaimEAPGAmount",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/rcm/Billing/Claim/EAPGAmount",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"rcm",
+										"Billing",
+										"Claim",
+										"EAPGAmount"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "BillingClaimDetails",
+					"item": [
+						{
+							"name": "GetBillingClaim",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/rcm/Claim?Claimid&AppointmentId=939777&PracticeId=81&CurrentStatusId=2&ClaimTypeId=1&IsPendingAppt=false&AppointmenttypeId=6",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"rcm",
+										"Claim"
+									],
+									"query": [
+										{
+											"key": "Claimid",
+											"value": null
+										},
+										{
+											"key": "AppointmentId",
+											"value": "939777"
+										},
+										{
+											"key": "PracticeId",
+											"value": "81"
+										},
+										{
+											"key": "CurrentStatusId",
+											"value": "2"
+										},
+										{
+											"key": "ClaimTypeId",
+											"value": "1"
+										},
+										{
+											"key": "IsPendingAppt",
+											"value": "false"
+										},
+										{
+											"key": "AppointmenttypeId",
+											"value": "6"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingClaimForms",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/rcm/Claim/Forms?AppointmentId=939777",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"rcm",
+										"Claim",
+										"Forms"
+									],
+									"query": [
+										{
+											"key": "AppointmentId",
+											"value": "939777"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingSupervisingPhysicians",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/rcm/Claim/SupervisingPhysicians?PracticeId=81&locationId=149&providerId=15&dos=2025-04-01+08%3A00%3A00.000",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"rcm",
+										"Claim",
+										"SupervisingPhysicians"
+									],
+									"query": [
+										{
+											"key": "PracticeId",
+											"value": "81"
+										},
+										{
+											"key": "locationId",
+											"value": "149"
+										},
+										{
+											"key": "providerId",
+											"value": "15"
+										},
+										{
+											"key": "dos",
+											"value": "2025-04-01+08%3A00%3A00.000"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingClaimPos",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/rcm/Claim/Pos",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"rcm",
+										"Claim",
+										"Pos"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingClaimTos",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/rcm/Claim/Tos",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"rcm",
+										"Claim",
+										"Tos"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingClaimInsuranceform",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/rcm/Claim/InsuranceForm?ClaimId=612482&FormId=1&AppointmentId=939918&ConsolidateFileName=CL2504612482_Jordan_Bodhi_9caa24de-b02b-4312-bcf1-39fe53dfd2de.pdf",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"rcm",
+										"Claim",
+										"InsuranceForm"
+									],
+									"query": [
+										{
+											"key": "ClaimId",
+											"value": "612482"
+										},
+										{
+											"key": "FormId",
+											"value": "1"
+										},
+										{
+											"key": "AppointmentId",
+											"value": "939918"
+										},
+										{
+											"key": "ConsolidateFileName",
+											"value": "CL2504612482_Jordan_Bodhi_9caa24de-b02b-4312-bcf1-39fe53dfd2de.pdf"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingClaimSuperBills",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/rcm/Claim/SuperBills?EpisodeId=134365&ProviderId=15",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"rcm",
+										"Claim",
+										"SuperBills"
+									],
+									"query": [
+										{
+											"key": "EpisodeId",
+											"value": "134365"
+										},
+										{
+											"key": "ProviderId",
+											"value": "15"
+										},
+										{
+											"key": "TreatmentDate",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "BillingDashboard",
+					"item": [
+						{
+							"name": "GetBillingSummaryCounts",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/rcm/BillingDashboard/SummaryCounts?PracticeIds=81",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"rcm",
+										"BillingDashboard",
+										"SummaryCounts"
+									],
+									"query": [
+										{
+											"key": "PracticeIds",
+											"value": "81"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingPracticeLocation",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/ehr/PracticeLocation?PracticeId=81&LocationId=149&ItemsPerPage=0&Page=1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"ehr",
+										"PracticeLocation"
+									],
+									"query": [
+										{
+											"key": "PracticeId",
+											"value": "81"
+										},
+										{
+											"key": "LocationId",
+											"value": "149"
+										},
+										{
+											"key": "ItemsPerPage",
+											"value": "0"
+										},
+										{
+											"key": "Page",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetEclaimstatus",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/rcm/BillingDashboard/eClaimStatusDetails?Claimid=<long>&Page=1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"rcm",
+										"BillingDashboard",
+										"eClaimStatusDetails"
+									],
+									"query": [
+										{
+											"key": "Claimid",
+											"value": "<long>"
+										},
+										{
+											"key": "Page",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingDashboardSearchresuts",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/rcm/BillingDashboard?AppointmentStartDate=2025-04-11T19%3A38%3A10.341&AppointmentEndDate=2025-04-11T19%3A38%3A10.341&Page=1&PracticeIds=81&BillingStatusIds=2%2C5%2C17%2C86%2C122%2C124%2C133%2C134%2C135%2C136%2C137%2C138%2C147%2C160%2C161%2C198%2C199%2C213&PayorIds&LoggedInMemberId=8920",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"rcm",
+										"BillingDashboard"
+									],
+									"query": [
+										{
+											"key": "AppointmentStartDate",
+											"value": "2025-04-11T19%3A38%3A10.341"
+										},
+										{
+											"key": "AppointmentEndDate",
+											"value": "2025-04-11T19%3A38%3A10.341"
+										},
+										{
+											"key": "Page",
+											"value": "1"
+										},
+										{
+											"key": "PracticeIds",
+											"value": "81"
+										},
+										{
+											"key": "BillingStatusIds",
+											"value": "2%2C5%2C17%2C86%2C122%2C124%2C133%2C134%2C135%2C136%2C137%2C138%2C147%2C160%2C161%2C198%2C199%2C213"
+										},
+										{
+											"key": "PayorIds",
+											"value": null
+										},
+										{
+											"key": "LoggedInMemberId",
+											"value": "8920"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjQxRUYwQTlENTEzNzEyOTNBNjI1QTU5NUQzQUVGRDdEMDczMjBDODRSUzI1NiIsInR5cCI6ImF0K2p3dCIsIng1dCI6IlFlOEtuVkUzRXBPbUphV1YwNjc5ZlFjeURJUSJ9.eyJuYmYiOjE3NDQzNTEzNjcsImV4cCI6MTc0NDcxMTM2NywiaXNzIjoiaHR0cHM6Ly9pZHBxYXYyLnlvdXJkcnMuY29tIiwiYXVkIjpbInlvdXJkcnNhcGkiLCJ5b3VyZHJzaWRwYXBpIiwieW91cmRyc3N5Y3dlYnNlcnZpY2UiXSwiY2xpZW50X2lkIjoieW91cmRycy5pbnRlcmFjdGl2ZS5wdWJsaWMud2ViLnFhdjIiLCJzdWIiOiIxIiwiYXV0aF90aW1lIjoxNzQ0MzUxMzYxLCJpZHAiOiJsb2NhbCIsInJvbGUiOiIxIiwiYWxsb3dlZGRvbWFpbiI6InFhZi55b3VyZHJzLmNvbSIsImFzc29jaWF0ZWRidXNpbmVzc2NsaWVudHMiOiJbe1wiYnVzaW5lc3NjbGllbnR1bmlxdWVpZFwiOlwiZjdhNGI4N2VcIixcImJ1c2luZXNzY2xpZW50bWVtYmVyaWRcIjoxLFwiYnVzaW5lc3NjbGllbnRuYW1lXCI6XCJWMiBQcm9kXCIsXCJzdWJkb21pblwiOlwibnloc3FhdjIueW91cmRycy5jb21cIn0se1wiYnVzaW5lc3NjbGllbnR1bmlxdWVpZFwiOlwiZWI0ZGI5MGNcIixcImJ1c2luZXNzY2xpZW50bWVtYmVyaWRcIjoxLFwiYnVzaW5lc3NjbGllbnRuYW1lXCI6XCJIZWFsdGggRWFzdFwiLFwic3ViZG9taW5cIjpcInFhZi55b3VyZHJzLmNvbVwifV0iLCJidXNpbmVzc2NsaWVudHVuaXF1ZWlkIjoiZWI0ZGI5MGMiLCJ1bmFtZSI6IllvdXJEcnNBZG1pbkB5ZC5jb20iLCJvcGVudG9rYXBpa2V5IjoiNDc4NTA5MDEiLCJ1cGRveGZheG51bWJlciI6Ijg4ODQ0MDQ1OTgiLCJqdGkiOiJBOTNCNzlCM0ZEMjI1RUYxOEFDQTYzNjY5MTBBOEYzMiIsInNpZCI6IjAwNENDNzk0Njk3NUJCRkFCOERGMTFFMTIyN0Q2MTU4IiwiaWF0IjoxNzQ0MzUxMzY3LCJzY29wZSI6WyJvcGVuaWQiLCJwcm9maWxlIiwiZW1haWwiLCJ5b3VyZHJzYXBpc2NvcGUiLCJ5b3VyZHJzaWRwYXBpc2NvcGUiLCJ5b3VyZHJzc3ljd2Vic2VydmljZXNjb3BlIiwib2ZmbGluZV9hY2Nlc3MiXSwiYW1yIjpbInB3ZCJdfQ.oQySSUaltP3CDezfHRsi5Njk8EtUFycvOixkjvILbiO2u6Et2YXGzWo4VujH9yi9EMeEB1Ktm3G-wbD9AI87eMSPPvQnwgWoCCBpIVVeGA5gl8bthddyfb1rTMSONZ827cUU3rmZOTxRnuXWVf_Y2Uf2IybyoDe7zxAVSieCPGsTKxQU1KIOGkWpUkA-808ZAGRR8MctbkxvLf8zm04vkL3015MuyInmt5YWjC0fBBHJCfX_5SgqB193Tc7O-QQjgVt9sMTowizO5tTjpWXwq-LfplBW3RcX0xTXVr4Cq0NrVLhAAGZIGSm_n7FBx6v0FSsgPxL9kWOvmTCrN1iYDmyBtbvAdxlX0h7n_godE1wK0_G1_5Lij4IMddYAvzpA9R9tdJbDmIqXB_JbGTmDyEHWdHS8Hj3yKaMuy-gyktKV5ZQ2hH87oIHPEXqgHj_zbpvXQA7APso8MxuoOGrJ_EnLufUHvYhdQ1ahYZxYytzu2loOcwiTdiUD5djgwnbfIVey-lf7eeij4oHlMcSthN7oQjOejrLAJIdCu9JY6LnSWE0aCcgBSMpjtxvI80PyCUcXnmmvvJ6piwBHfVGyAMoSUQgdV6gw6lRNI_UKlKJk0WD6eVJ9XhxWh3QUrixYQaB6Hl_KQ2leTkZyOOXPUQP44M772pAJiPXMm6VA1_o",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://apiqav2.yourdrs.com/v1"
+		}
+	]
+}
