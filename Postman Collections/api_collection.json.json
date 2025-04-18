@@ -1179,6 +1179,19 @@
 			"name": "Provider DB",
 			"item": [
 				{
+					"name": "GetProviderDB",
+					"id": "b277d773-0467-4c8c-bab0-d234aaad95ad",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/ehr/ProviderDashboard"
+					},
+					"response": []
+				},
+				{
 					"name": "GetFieldsProviderDB",
 					"event": [
 						{
@@ -1530,15 +1543,11 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "https://apiqav2.yourdrs.com/v1/ehr/ProviderDashboard/GetSummaryCounts?AppointmentFromDate=2025-04-11",
-							"protocol": "https",
+							"raw": "{{base_url}}/ehr/ProviderDashboard/GetSummaryCounts?AppointmentFromDate=2025-04-11",
 							"host": [
-								"apiqav2",
-								"yourdrs",
-								"com"
+								"{{base_url}}"
 							],
 							"path": [
-								"v1",
 								"ehr",
 								"ProviderDashboard",
 								"GetSummaryCounts"
