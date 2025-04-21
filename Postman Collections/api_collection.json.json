@@ -3351,14 +3351,28 @@
 					"response": []
 				},
 				{
-					"name": "New Request",
+					"name": "GetCollectionClaimPendingPaymentDetailsHistory",
 					"id": "f7b0c1ef-20e7-4d68-8b47-72a13011c1d6",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": "{{base_url}}/rcm/Collection/ClaimPendingPaymentDetailsHistory"
+					},
+					"response": []
+				},
+				{
+					"name": "GetClaimCollectionStatusHistory",
+					"id": "3ea4fd5d-efd6-4b10-812d-2a00a7211d20",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/rcm/Collection/ClaimCollectionStatusHistory"
 					},
 					"response": []
 				}
