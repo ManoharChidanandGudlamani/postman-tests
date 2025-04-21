@@ -3216,8 +3216,66 @@
 			"name": "External Document Upload",
 			"item": [
 				{
-					"name": "Ger",
+					"name": "GetExternalDocumentUpload",
 					"id": "139578f0-ee26-4a46-8178-a014a4fd89f7",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/ehr/ExternalDocumentUpload"
+					},
+					"response": []
+				},
+				{
+					"name": "GetExternalDocumentUpload/SignedUrl",
+					"id": "2b8f2e61-6448-4e0e-8d45-ee4239729a37",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/ehr/ExternalDocumentUpload/SignedUrl"
+					},
+					"response": []
+				}
+			],
+			"id": "d788383d-a22c-4473-8599-e320f8a40503"
+		},
+		{
+			"name": "Fax Dashboard",
+			"item": [
+				{
+					"name": "GetFax",
+					"id": "e968dc2d-66cf-4e2d-990c-8afc01444931",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/ehr/Fax"
+					},
+					"response": []
+				},
+				{
+					"name": "GetUnreadcount",
+					"id": "32db16cd-fd97-428c-8dd6-fec1d67ca9f7",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/ehr/Fax/UnReadCount"
+					},
+					"response": []
+				},
+				{
+					"name": "GetFaxAttachment",
+					"id": "5c3250e7-e281-44a4-bc0b-46b7d84aaa9d",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -3228,7 +3286,7 @@
 					"response": []
 				}
 			],
-			"id": "d788383d-a22c-4473-8599-e320f8a40503"
+			"id": "1564c3f3-8dd1-42b3-b622-9c1df89c9422"
 		}
 	],
 	"auth": {
