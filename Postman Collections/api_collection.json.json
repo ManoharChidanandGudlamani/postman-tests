@@ -3325,8 +3325,34 @@
 			"name": "Collection Dashboard",
 			"item": [
 				{
-					"name": "New Request",
+					"name": "GetCollectionTeams",
 					"id": "b93821f4-7fb5-4f08-962f-480dcdd3c70b",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/rcm/Collection/Teams"
+					},
+					"response": []
+				},
+				{
+					"name": "GetCollectionTeamMembers",
+					"id": "3518d4f6-6892-4683-a99b-ad9585589520",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/rcm/Collection/TeamMembers"
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"id": "f7b0c1ef-20e7-4d68-8b47-72a13011c1d6",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
