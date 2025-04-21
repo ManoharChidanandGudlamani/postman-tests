@@ -3290,9 +3290,54 @@
 			"id": "1564c3f3-8dd1-42b3-b622-9c1df89c9422"
 		},
 		{
-			"name": "CAse Management Dashboard",
-			"item": [],
+			"name": "Case Management Dashboard",
+			"item": [
+				{
+					"name": "GetCaseManagementDashboard",
+					"id": "149a688c-0434-4901-99e6-051cae82de3c",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/ehr/CaseManagementDashboard"
+					},
+					"response": []
+				},
+				{
+					"name": "GetCMDCaseManagers",
+					"id": "96ea559d-25bf-42fd-bd8a-08bcd7d2b207",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/ehr/CaseManagementDashboard/CaseManagers"
+					},
+					"response": []
+				}
+			],
 			"id": "8c44653c-b26c-426b-a7fb-981e81ebc68b"
+		},
+		{
+			"name": "Collection Dashboard",
+			"item": [
+				{
+					"name": "New Request",
+					"id": "b93821f4-7fb5-4f08-962f-480dcdd3c70b",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			],
+			"id": "811a1694-1cbf-44fb-9720-9302342305aa"
 		}
 	],
 	"auth": {
