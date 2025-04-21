@@ -3211,6 +3211,24 @@
 				}
 			],
 			"id": "caf4b5fe-0e97-4db9-b06d-9e2023c479ec"
+		},
+		{
+			"name": "External Document Upload",
+			"item": [
+				{
+					"name": "Ger",
+					"id": "139578f0-ee26-4a46-8178-a014a4fd89f7",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			],
+			"id": "d788383d-a22c-4473-8599-e320f8a40503"
 		}
 	],
 	"auth": {
