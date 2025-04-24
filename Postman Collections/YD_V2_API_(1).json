@@ -1,0 +1,3435 @@
+{
+	"info": {
+		"_postman_id": "bc38d6f7-6fba-49e6-b942-7aee0377b4fc",
+		"name": "YD V2 API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Home Page",
+			"item": [
+				{
+					"name": "GetTags",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "4e6cd2b0-e42c-4603-9a3f-061d652521c8"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"// Validate main structure\r",
+									"pm.test(\"UnReadCaseNoteTags exists and is an array\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"UnReadCaseNoteTags\").that.is.an(\"array\").and.not.empty;\r",
+									"});\r",
+									"\r",
+									"// Grab first unread case tag\r",
+									"const caseTag = jsonData.UnReadCaseNoteTags[0];\r",
+									"\r",
+									"// Validate key patient-level info\r",
+									"pm.test(\"Validate patient details\", function () {\r",
+									"    pm.expect(caseTag.FirstName).to.eql(\"mcg\");\r",
+									"    pm.expect(caseTag.LastName).to.eql(\"Patient\");\r",
+									"    pm.expect(caseTag.GenderId).to.eql(0);\r",
+									"    pm.expect(caseTag.DOB).to.eql(\"1996-12-03T00:00:00\");\r",
+									"    pm.expect(caseTag.PatientId).to.eql(115243);\r",
+									"    pm.expect(caseTag.EpisodeId).to.eql(121059);\r",
+									"    pm.expect(caseTag.CaseNumber).to.eql(\"Y2406115243_1\");\r",
+									"});\r",
+									"\r",
+									"// Validate tag comments\r",
+									"pm.test(\"Validate UnReadTagComments\", function () {\r",
+									"    pm.expect(caseTag.UnReadTagComments).to.be.an(\"array\").that.is.not.empty;\r",
+									"    \r",
+									"    const comment = caseTag.UnReadTagComments[0];\r",
+									"    pm.expect(comment.Comments).to.eql(\"test reply\");\r",
+									"    pm.expect(comment.AppointmentId).to.eql(838767);\r",
+									"    pm.expect(comment.CaseNoteTagId).to.eql(1519009);\r",
+									"});\r",
+									"\r",
+									"// Save values as environment variables for next requests\r",
+									"pm.environment.set(\"EpisodeId\", caseTag.EpisodeId);\r",
+									"pm.environment.set(\"AppointmentId\", caseTag.UnReadTagComments[0].AppointmentId);\r",
+									"pm.environment.set(\"CaseNoteTagId\", caseTag.UnReadTagComments[0].CaseNoteTagId);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "7cfd2df2-5921-4305-9cba-b4d9d44746b2"
+							}
+						}
+					],
+					"id": "b064875c-1c49-4f14-8f42-f64ef1d9808f",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/ehr/Home/Tags?ItemsPerPage=10&Page=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ehr",
+								"Home",
+								"Tags"
+							],
+							"query": [
+								{
+									"key": "ItemsPerPage",
+									"value": "10"
+								},
+								{
+									"key": "Page",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetAppointmentsHome",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the response\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"//  Status code\r",
+									"pm.test(\"Validate Status Code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"//  Check structure\r",
+									"pm.test(\"Response should contain 'PatientAlerts'\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"PatientAlerts\").that.is.an(\"array\");\r",
+									"});\r",
+									"\r",
+									"// Check if array is not empty\r",
+									"pm.test(\"PatientAlerts array should not be empty\", function () {\r",
+									"    if (jsonData.PatientAlerts.length === 0) {\r",
+									"        console.warn(\"PatientAlerts array is empty — no alerts to validate.\");\r",
+									"        pm.expect.fail(\"No data found in PatientAlerts array.\");\r",
+									"    } else {\r",
+									"        pm.expect(jsonData.PatientAlerts).to.be.an(\"array\").that.is.not.empty;\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"// Only validate the first alert if it exists\r",
+									"if (jsonData.PatientAlerts.length > 0) {\r",
+									"    const alert = jsonData.PatientAlerts[0];\r",
+									"\r",
+									"    pm.test(\"Validate ApptId\", function () {\r",
+									"        pm.expect(alert.ApptId).to.eql(939697);\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"Validate ProviderId\", function () {\r",
+									"        pm.expect(alert.ProviderId).to.eql(15);\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"Validate EpisodeId\", function () {\r",
+									"        pm.expect(alert.EpisodeId).to.eql(134276);\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"Validate CaseNoteId\", function () {\r",
+									"        pm.expect(alert.CaseNoteId).to.eql(4426507);\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"Validate Patient First & Last Name\", function () {\r",
+									"        pm.expect(alert.PatientFirstName).to.eql(\"Allie\");\r",
+									"        pm.expect(alert.PatientLastName).to.eql(\"Lawrence\");\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"Validate Patient DOB\", function () {\r",
+									"        pm.expect(alert.PatientDOB).to.eql(\"1996-12-03T00:00:00\");\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"Validate GenderId\", function () {\r",
+									"        pm.expect(alert.GenderId).to.eql(1);\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"Validate CaseTypeId\", function () {\r",
+									"        pm.expect(alert.CaseTypeId).to.eql(1);\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"Validate CaseTypeStateId\", function () {\r",
+									"        pm.expect(alert.CaseTypeStateId).to.eql(41);\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"Validate DOS\", function () {\r",
+									"        pm.expect(alert.DOS).to.eql(\"2025-03-27T09:45:00\");\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"Validate Provider First & Last Name\", function () {\r",
+									"        pm.expect(alert.ProviderFirstName).to.eql(\"Thomas\");\r",
+									"        pm.expect(alert.ProviderLastName).to.eql(\"Scilaris\");\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"Validate Appointment Type Info\", function () {\r",
+									"        pm.expect(alert.AppointmentTypeId).to.eql(1);\r",
+									"        pm.expect(alert.AppointmentTypeName).to.eql(\"Follow Up Visit\");\r",
+									"        pm.expect(alert.AppointmentTypeShortName).to.eql(\"FUP\");\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"Validate Case Number\", function () {\r",
+									"        pm.expect(alert.CaseNumber).to.eql(\"Y2503127452_1\");\r",
+									"    });\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "85c0b8b2-e4ef-4e0f-b84c-ade557d34eb0"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "a0fdc2c5-69b5-4187-a18d-1d4407b3605f"
+							}
+						}
+					],
+					"id": "4c7cba6e-f1ce-4df6-bfac-7add768f1f3f",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/ehr/Home/Appointments?DOSStartDate=2025-03-27&ItemsPerPage&Page=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ehr",
+								"Home",
+								"Appointments"
+							],
+							"query": [
+								{
+									"key": "DOSStartDate",
+									"value": "2025-03-27"
+								},
+								{
+									"key": "ItemsPerPage",
+									"value": null
+								},
+								{
+									"key": "Page",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetMemberReminders",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the response JSON\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"// Status code check\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Check if MemberReminders exists\r",
+									"pm.test(\"MemberReminders exists\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"MemberReminders\").that.is.an(\"array\");\r",
+									"    console.log(\"MemberReminders length:\", jsonData.MemberReminders.length);\r",
+									"});\r",
+									"\r",
+									"// If array is not empty, proceed to validate its contents\r",
+									"if (jsonData.MemberReminders && jsonData.MemberReminders.length > 0) {\r",
+									"    const reminder = jsonData.MemberReminders[0];\r",
+									"    console.log(\"First reminder object:\", reminder);\r",
+									"\r",
+									"    pm.test(\"Validate basic reminder fields\", function () {\r",
+									"        pm.expect(reminder.Id).to.eql(25);\r",
+									"        pm.expect(reminder.EpisodeId).to.eql(96808);\r",
+									"        pm.expect(reminder.AppointmentId).to.eql(791035);\r",
+									"        pm.expect(reminder.ReminderText).to.eql(\"test\");\r",
+									"        pm.expect(reminder.ReminderDateTime).to.eql(\"2025-01-17T13:00:00\");\r",
+									"        pm.expect(reminder.StatusId).to.eql(19);\r",
+									"        pm.expect(reminder.IsActive).to.be.true;\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"Validate creator details\", function () {\r",
+									"        pm.expect(reminder.CreatedBy).to.eql(1);\r",
+									"        pm.expect(reminder.CreatedDate).to.eql(\"2025-01-17T07:18:17\");\r",
+									"        pm.expect(reminder.CreatedFirstName).to.eql(\"YourDrs\");\r",
+									"        pm.expect(reminder.CreatedLastName).to.eql(\"Admin\");\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"Validate patient info\", function () {\r",
+									"        pm.expect(reminder.PatientFirstName).to.eql(\"Test Test\");\r",
+									"        pm.expect(reminder.PatientLastName).to.eql(\"Test Test\");\r",
+									"        pm.expect(reminder.PatientDob).to.eql(\"1938-01-20T00:00:00\");\r",
+									"        pm.expect(reminder.CaseNumber).to.eql(\"Y181021994_7\");\r",
+									"        pm.expect(reminder.Mrn).to.eql(\"Y181021994\");\r",
+									"        pm.expect(reminder.GenderId).to.eql(2);\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"Validate case and member info\", function () {\r",
+									"        pm.expect(reminder.CaseTypeStateId).to.eql(41);\r",
+									"        pm.expect(reminder.CaseTypeId).to.eql(1);\r",
+									"        pm.expect(reminder.LoggedInMemberId).to.eql(0);\r",
+									"        pm.expect(reminder.MemberList).to.eql(\"Asha Kumbar\");\r",
+									"    });\r",
+									"} else {\r",
+									"    // Log only, do not fail\r",
+									"    console.warn(\"❗ MemberReminders array is empty — skipping reminder field validations.\");\r",
+									"}\r",
+									"\r",
+									"// PagingInfo checks\r",
+									"pm.test(\"PagingInfo property exists\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"PagingInfo\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validate PagingInfo properties\", function () {\r",
+									"    pm.expect(jsonData.PagingInfo).to.have.property(\"TotalItems\");\r",
+									"    pm.expect(jsonData.PagingInfo).to.have.property(\"ItemsPerPage\");\r",
+									"    pm.expect(jsonData.PagingInfo).to.have.property(\"CurrentPage\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "4ab3a3ce-dff6-4fbe-9259-3a27c1da735a"
+							}
+						}
+					],
+					"id": "a023549e-0522-430a-9359-1d256528b46d",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/ehr/Reminders/MemberReminders?Page=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ehr",
+								"Reminders",
+								"MemberReminders"
+							],
+							"query": [
+								{
+									"key": "Page",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetUnreadcount",
+					"id": "de65a305-bccc-4834-9649-9788c9ea1d63",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/ehr/Message/UnreadCount"
+					},
+					"response": []
+				},
+				{
+					"name": "GetReminderCount",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "c54ca9fe-a70a-4116-94c6-f60831975149"
+							}
+						}
+					],
+					"id": "5798614d-96a7-4fde-b01a-4edb6363dac1",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/ehr/Reminders/Counts"
+					},
+					"response": []
+				},
+				{
+					"name": "GetMemberDetails",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse response JSON\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"// Status code check\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Basic field checks\r",
+									"pm.test(\"Validate user fields\", function () {\r",
+									"    pm.expect(jsonData.MemberId).to.eql(8920);  // MemberId, as per your earlier data\r",
+									"    pm.expect(jsonData.UserName).to.eql(\"QATeam@yd.com\"); // Update to the correct UserName\r",
+									"    pm.expect(jsonData.Email).to.eql(\"QATeam@yd.com\"); // Update to the correct Email\r",
+									"    pm.expect(jsonData.FirstName).to.eql(\"QA\");\r",
+									"    pm.expect(jsonData.LastName).to.eql(\"Team\");\r",
+									"    pm.expect(jsonData.DisplayName).to.eql(\"QA Team\");\r",
+									"    pm.expect(jsonData.ProfilePhoto).to.be.null;\r",
+									"    pm.expect(jsonData.RequestChangePassword).to.be.false;\r",
+									"    pm.expect(jsonData.UserTermsAcceptedDate).to.be.null;\r",
+									"});\r",
+									"\r",
+									"// UserInfoRoles validation\r",
+									"pm.test(\"UserInfoRoles should exist and be a non-empty array\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"UserInfoRoles\");\r",
+									"    pm.expect(jsonData.UserInfoRoles).to.be.an(\"array\").that.is.not.empty;\r",
+									"});\r",
+									"\r",
+									"// Validate multiple roles in UserInfoRoles\r",
+									"pm.test(\"Validate UserInfoRoles fields\", function () {\r",
+									"    const roles = jsonData.UserInfoRoles;\r",
+									"\r",
+									"    // Check that each role has expected properties\r",
+									"    roles.forEach(role => {\r",
+									"        pm.expect(role).to.have.property(\"MemberRoleId\");\r",
+									"        pm.expect(role).to.have.property(\"RoleId\");\r",
+									"        pm.expect(role).to.have.property(\"RoleName\");\r",
+									"    });\r",
+									"\r",
+									"    // Specific check for each role\r",
+									"    const adminRole = roles.find(role => role.RoleName === \"Admin\");\r",
+									"    const staffRole = roles.find(role => role.RoleName === \"Staff\");\r",
+									"    const superAdminRole = roles.find(role => role.RoleName === \"SuperAdmin\");\r",
+									"\r",
+									"    // Ensure the expected roles exist in the response\r",
+									"    pm.expect(adminRole).to.not.be.undefined;\r",
+									"    pm.expect(staffRole).to.not.be.undefined;\r",
+									"    pm.expect(superAdminRole).to.not.be.undefined;\r",
+									"\r",
+									"    // Validate specific properties for each role\r",
+									"    pm.expect(adminRole.MemberRoleId).to.eql(2930);\r",
+									"    pm.expect(adminRole.RoleId).to.eql(1);\r",
+									"    pm.expect(adminRole.RoleName).to.eql(\"Admin\");\r",
+									"\r",
+									"    pm.expect(staffRole.MemberRoleId).to.eql(2931);\r",
+									"    pm.expect(staffRole.RoleId).to.eql(4);\r",
+									"    pm.expect(staffRole.RoleName).to.eql(\"Staff\");\r",
+									"\r",
+									"    pm.expect(superAdminRole.MemberRoleId).to.eql(2932);\r",
+									"    pm.expect(superAdminRole.RoleId).to.eql(83);\r",
+									"    pm.expect(superAdminRole.RoleName).to.eql(\"SuperAdmin\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "7279d016-c38d-437a-b028-0ff33242a3cb"
+							}
+						}
+					],
+					"id": "8a4762af-a6e3-4371-af58-b87b5f9aa530",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/ehr/Member/Detail"
+					},
+					"response": []
+				}
+			],
+			"id": "cbdbdd0c-3ffa-4165-a0b5-d53a2a62de66"
+		},
+		{
+			"name": "Office DB",
+			"item": [
+				{
+					"name": "Fav FiltersAppointmenttab",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"console.log(\"Response:\", jsonData);\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response should be an array with at least one filter\", function () {\r",
+									"    pm.expect(jsonData).to.be.an(\"array\").that.is.not.empty;\r",
+									"});\r",
+									"\r",
+									"const filter = jsonData[0];\r",
+									"\r",
+									"pm.test(\"Validate basic filter properties (non-null check)\", function () {\r",
+									"    pm.expect(filter).to.have.property(\"Id\").that.is.a(\"number\");\r",
+									"    pm.expect(filter).to.have.property(\"DashboardId\").that.is.a(\"number\");\r",
+									"    pm.expect(filter).to.have.property(\"MemberId\").that.is.a(\"number\");\r",
+									"    pm.expect(filter).to.have.property(\"FilterName\").that.is.a(\"string\");\r",
+									"    pm.expect(filter).to.have.property(\"IsActive\").that.is.a(\"boolean\");\r",
+									"    pm.expect(filter).to.have.property(\"IsDefaultFilter\").that.is.a(\"boolean\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"FilterValues should be an array with at least one entry\", function () {\r",
+									"    pm.expect(filter.FilterValues).to.be.an(\"array\").that.is.not.empty;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Each FilterValue has FId and Value\", function () {\r",
+									"    filter.FilterValues.forEach((fv, i) => {\r",
+									"        pm.expect(fv).to.have.property(\"FId\");\r",
+									"        pm.expect(fv).to.have.property(\"Value\");\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Optionally validate JSON Value for FId = 3\", function () {\r",
+									"    const fv = filter.FilterValues.find(fv => fv.FId === 3);\r",
+									"    if (fv) {\r",
+									"        try {\r",
+									"            const valueObj = JSON.parse(fv.Value);\r",
+									"            pm.expect(valueObj).to.have.property(\"RangeId\", 1);\r",
+									"            pm.expect(valueObj.Date).to.be.null;\r",
+									"        } catch (e) {\r",
+									"            pm.expect.fail(`Invalid JSON in FId=3 value: ${e.message}`);\r",
+									"        }\r",
+									"    } else {\r",
+									"        console.warn(\" Skipped: No FilterValue with FId = 3\");\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "19925ca0-6478-4a2f-8008-ef76deb20427"
+							}
+						}
+					],
+					"id": "3038aa0a-e041-499a-9beb-a656246eaf77",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/ehr/Dashboard/9/FavoriteFilters"
+					},
+					"response": []
+				},
+				{
+					"name": "GetCategoriesOfficeDB",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse JSON response\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"// Status code check\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Check if 'FormConfiguartionCategoriesDetails' is an array\r",
+									"pm.test(\"FormConfiguartionCategoriesDetails should be an array\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"FormConfiguartionCategoriesDetails\");\r",
+									"    pm.expect(jsonData.FormConfiguartionCategoriesDetails).to.be.an(\"array\").that.is.not.empty;\r",
+									"});\r",
+									"\r",
+									"// Validate the first item in the array\r",
+									"const formDetail = jsonData.FormConfiguartionCategoriesDetails[0];\r",
+									"\r",
+									"pm.test(\"Validate Form Configuration Details fields\", function () {\r",
+									"    pm.expect(formDetail.FormConfigId).to.eql(0);\r",
+									"    pm.expect(formDetail.FormCategoriesId).to.eql(1);\r",
+									"    pm.expect(formDetail.CategoryName).to.eql(\"Patient Forms\");\r",
+									"    pm.expect(formDetail.FormCategoriesMenuId).to.eql(1);\r",
+									"    pm.expect(formDetail.CategoryMenuName).to.eql(\"Intake\");\r",
+									"    pm.expect(formDetail.FormTypeId).to.eql(2);\r",
+									"    pm.expect(formDetail.FormTypeName).to.eql(\"Electronic\");\r",
+									"    pm.expect(formDetail.FormFrequencyId).to.eql(2);\r",
+									"    pm.expect(formDetail.FormFrequencyName).to.eql(\"Single Document-Override\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "020cf446-b77d-4031-92f5-75bc9b18d119"
+							}
+						}
+					],
+					"id": "ef39997b-ab66-4c33-9a99-f3fa906289ee",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/ehr/FormConfiguration/Categories?DashboardId=9",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ehr",
+								"FormConfiguration",
+								"Categories"
+							],
+							"query": [
+								{
+									"key": "DashboardId",
+									"value": "9"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetAppointmentsOfficeDB",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the JSON response\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"//  Status code check\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Validate the response is an array\r",
+									"pm.test(\"Response should be an array\", function () {\r",
+									"    pm.expect(jsonData).to.be.an(\"array\").that.is.not.empty;\r",
+									"});\r",
+									"\r",
+									"// Validate each appointment record\r",
+									"jsonData.forEach((appointment, index) => {\r",
+									"    pm.test(`Appointment #${index + 1} - Validate required fields`, function () {\r",
+									"        pm.expect(appointment).to.have.property(\"AppointmentId\");\r",
+									"        pm.expect(appointment).to.have.property(\"EpisodeId\");\r",
+									"        pm.expect(appointment).to.have.property(\"ProviderId\");\r",
+									"        pm.expect(appointment).to.have.property(\"StartDateTime\");\r",
+									"        pm.expect(appointment).to.have.property(\"EndDateTime\");\r",
+									"        pm.expect(appointment).to.have.property(\"PatientId\");\r",
+									"        pm.expect(appointment).to.have.property(\"FirstName\");\r",
+									"        pm.expect(appointment).to.have.property(\"LastName\");\r",
+									"        pm.expect(appointment).to.have.property(\"MRN\");\r",
+									"        pm.expect(appointment).to.have.property(\"ProviderName\");\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"//  Validate Start and End DateTime format\r",
+									"jsonData.forEach((appointment, index) => {\r",
+									"    pm.test(`Appointment #${index + 1} - StartDateTime and EndDateTime format`, function () {\r",
+									"        pm.expect(appointment.StartDateTime).to.match(/^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2})$/);\r",
+									"        pm.expect(appointment.EndDateTime).to.match(/^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2})$/);\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"//  Check if EpisodeBodyParts is not empty or null (allow empty string in case it's valid)\r",
+									"jsonData.forEach((appointment, index) => {\r",
+									"    pm.test(`Appointment #${index + 1} - Validate EpisodeBodyParts is not null or empty`, function () {\r",
+									"        pm.expect(appointment.EpisodeBodyParts).to.satisfy(function (value) {\r",
+									"            return value !== null && (value.trim() !== \"\" || value === \"\"); // Allow empty string\r",
+									"        });\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"//  Check if GenderId is either 1 or 2 (assuming Male or Female)\r",
+									"jsonData.forEach((appointment, index) => {\r",
+									"    pm.test(`Appointment #${index + 1} - GenderId validation`, function () {\r",
+									"        if (appointment.GenderId) {\r",
+									"            pm.expect(appointment.GenderId).to.be.oneOf([1, 2]);\r",
+									"        }\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "449bd9ca-cbd9-4954-845f-cf927168d42d"
+							}
+						}
+					],
+					"id": "dab46884-5cf9-403c-995c-5ad431a0fae5",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/ehr/AppointmentDashboard?LocationIds=121&ProviderIds=&DateOfService=2025-03-27",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ehr",
+								"AppointmentDashboard"
+							],
+							"query": [
+								{
+									"key": "LocationIds",
+									"value": "121"
+								},
+								{
+									"key": "ProviderIds",
+									"value": ""
+								},
+								{
+									"key": "DateOfService",
+									"value": "2025-03-27"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetTooltipOfficeDB",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the JSON response\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"// Status code check\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Validate that 'PatientPhones' is an array and check its length\r",
+									"pm.test(\"PatientPhones should be an array and length should be 0\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"PatientPhones\");\r",
+									"    pm.expect(jsonData.PatientPhones).to.be.an(\"array\").that.has.lengthOf(0);\r",
+									"});\r",
+									"\r",
+									"// Validate that 'CaseNotes' is an array and check its length\r",
+									"pm.test(\"CaseNotes should be an array and length should be 0\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"CaseNotes\");\r",
+									"    pm.expect(jsonData.CaseNotes).to.be.an(\"array\").that.has.lengthOf(0);\r",
+									"});\r",
+									"\r",
+									"// Validate that 'Alerts' exists and 'EpisodePatientAlert' is an array with length 0\r",
+									"pm.test(\"Alerts should contain 'EpisodePatientAlert' as an array with length 0\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"Alerts\");\r",
+									"    pm.expect(jsonData.Alerts).to.have.property(\"EpisodePatientAlert\");\r",
+									"    pm.expect(jsonData.Alerts.EpisodePatientAlert).to.be.an(\"array\").that.has.lengthOf(0);\r",
+									"});\r",
+									"\r",
+									"// Validate 'PagingInfo' fields\r",
+									"pm.test(\"PagingInfo should have correct properties\", function () {\r",
+									"    pm.expect(jsonData.Alerts).to.have.property(\"PagingInfo\");\r",
+									"    pm.expect(jsonData.Alerts.PagingInfo).to.have.property(\"TotalItems\").that.is.a(\"number\");\r",
+									"    pm.expect(jsonData.Alerts.PagingInfo).to.have.property(\"ItemsPerPage\").that.is.a(\"number\");\r",
+									"    pm.expect(jsonData.Alerts.PagingInfo).to.have.property(\"CurrentPage\").that.is.a(\"number\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "503c2eed-01fd-4cf2-a457-f4803c004f40"
+							}
+						}
+					],
+					"id": "d4a67dd9-4ed5-4094-9ba1-7e7d1411d5dc",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/ehr/AppointmentDashboard/ToolTipInformation?PatientId=133050&AppointmentId=978519&EpisodeId=140182",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ehr",
+								"AppointmentDashboard",
+								"ToolTipInformation"
+							],
+							"query": [
+								{
+									"key": "PatientId",
+									"value": "133050"
+								},
+								{
+									"key": "AppointmentId",
+									"value": "978519"
+								},
+								{
+									"key": "EpisodeId",
+									"value": "140182"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetSchedulerAppsOfficeDB",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the JSON response\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"//  Status code check\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"//  Validate 'Appointments' field exists and is an array\r",
+									"pm.test(\"Appointments should be an array\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"Appointments\");\r",
+									"    pm.expect(jsonData.Appointments).to.be.an(\"array\").that.is.not.empty;\r",
+									"});\r",
+									"\r",
+									"//  Validate the first appointment details\r",
+									"const appointment = jsonData.Appointments[0];\r",
+									"\r",
+									"pm.test(\"Validate Appointment fields\", function () {\r",
+									"    pm.expect(appointment).to.have.property(\"AppointmentId\").that.is.a(\"number\");\r",
+									"    pm.expect(appointment).to.have.property(\"EpisodeId\").that.is.a(\"number\");\r",
+									"    pm.expect(appointment).to.have.property(\"PracticeId\").that.is.a(\"number\");\r",
+									"    pm.expect(appointment).to.have.property(\"LocationId\").that.is.a(\"number\");\r",
+									"    pm.expect(appointment).to.have.property(\"ProviderId\").that.is.a(\"number\");\r",
+									"    pm.expect(appointment).to.have.property(\"AppointmentTypeId\").that.is.a(\"number\");\r",
+									"    pm.expect(appointment).to.have.property(\"AppointmentStatusId\").that.is.a(\"number\");\r",
+									"    pm.expect(appointment).to.have.property(\"StartDate\").that.is.a(\"string\");\r",
+									"    pm.expect(appointment).to.have.property(\"EndDate\").that.is.a(\"string\");\r",
+									"    pm.expect(appointment).to.have.property(\"CreatedDate\").that.is.a(\"string\");\r",
+									"    pm.expect(appointment).to.have.property(\"PatientId\").that.is.a(\"number\");\r",
+									"    pm.expect(appointment).to.have.property(\"FirstName\").that.is.a(\"string\");\r",
+									"    pm.expect(appointment).to.have.property(\"LastName\").that.is.a(\"string\");\r",
+									"    pm.expect(appointment).to.have.property(\"MRN\").that.is.a(\"string\");\r",
+									"    pm.expect(appointment).to.have.property(\"CaseNumber\").that.is.a(\"string\");\r",
+									"    pm.expect(appointment).to.have.property(\"ProviderName\").that.is.a(\"string\");\r",
+									"    pm.expect(appointment).to.have.property(\"HasPatientConfirmed\").that.is.a(\"boolean\");\r",
+									"    pm.expect(appointment).to.have.property(\"EpisodeAuthorizationId\").that.is.null;\r",
+									"    pm.expect(appointment.EpisodeAuthorizationId).to.satisfy(function(value) {\r",
+									"        return value === null || typeof value === 'number';\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"//  Check if 'StartDate' and 'EndDate' are in valid date-time format\r",
+									"pm.test(\"StartDate and EndDate should be valid date-time format\", function () {\r",
+									"    const dateFormatRegex = /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}$/;\r",
+									"    pm.expect(appointment.StartDate).to.match(dateFormatRegex);\r",
+									"    pm.expect(appointment.EndDate).to.match(dateFormatRegex);\r",
+									"});\r",
+									"\r",
+									"//  Check if 'ProfilePhoto' exists and is an empty string (optional field)\r",
+									"pm.test(\"ProfilePhoto should be an empty string\", function () {\r",
+									"    pm.expect(appointment.ProfilePhoto).to.eql(\"\");\r",
+									"});\r",
+									"\r",
+									"//  Validate 'ModifiedDate' and 'ModifiedByMember' (optional fields)\r",
+									"pm.test(\"ModifiedDate and ModifiedByMember should be null\", function () {\r",
+									"    pm.expect(appointment.ModifiedDate).to.be.null;\r",
+									"    pm.expect(appointment.ModifiedByMember).to.be.null;\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "0d5cdd87-ae2a-4e58-868c-ee2f51ff4e63"
+							}
+						}
+					],
+					"id": "a0d68dd3-a294-403b-ad04-be6da475c35b",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/ehr/Scheduler/Appointments?PracticeIds=81&LocationIds=121&ProviderIds=&DateOfService=2025-03-27",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ehr",
+								"Scheduler",
+								"Appointments"
+							],
+							"query": [
+								{
+									"key": "PracticeIds",
+									"value": "81"
+								},
+								{
+									"key": "LocationIds",
+									"value": "121"
+								},
+								{
+									"key": "ProviderIds",
+									"value": ""
+								},
+								{
+									"key": "DateOfService",
+									"value": "2025-03-27"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetStatuses",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"//  Status code check\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"// Log the entire response to the Postman console for debugging\r",
+									"console.log(\"Full Response:\", JSON.stringify(jsonData, null, 2));\r",
+									"\r",
+									"// Check if 'Statuses' exists and is an array\r",
+									"pm.test(\"Check if 'Statuses' exists and is an array\", function () {\r",
+									"    pm.expect(jsonData).to.be.an(\"array\").that.is.not.empty;\r",
+									"});\r",
+									"\r",
+									"// Validate that each status object has the expected properties\r",
+									"jsonData.forEach(function(status) {\r",
+									"    pm.test(`Validate Status fields for StatusId: ${status.StatusId}`, function () {\r",
+									"        pm.expect(status).to.have.property(\"Id\").that.is.a(\"number\");\r",
+									"        pm.expect(status).to.have.property(\"StatusGroupId\").that.is.a(\"number\");\r",
+									"        pm.expect(status).to.have.property(\"StatusId\").that.is.a(\"number\");\r",
+									"        pm.expect(status).to.have.property(\"BackgroundColor\").that.is.a(\"string\");\r",
+									"        pm.expect(status).to.have.property(\"FontColor\").that.is.a(\"string\");\r",
+									"        pm.expect(status).to.have.property(\"OrderNumber\").that.is.a(\"number\");\r",
+									"        pm.expect(status).to.have.property(\"IsMandatory\").that.is.a(\"boolean\");\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"// Additional tests based on specific values (optional)\r",
+									"pm.test(\"Check if specific StatusId exists\", function () {\r",
+									"    const statusIds = jsonData.map(status => status.StatusId);\r",
+									"    pm.expect(statusIds).to.include(3);  // Check if StatusId 3 is in the list\r",
+									"    pm.expect(statusIds).to.include(129);  // Check if StatusId 129 is in the list\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "d6118a83-826f-4e96-9bc9-1cef45af7f2f"
+							}
+						}
+					],
+					"id": "67ca9f14-84ff-448b-9203-c65bff61e418",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/ehr/AppointmentDashboard/Statuses"
+					},
+					"response": []
+				},
+				{
+					"name": "GetSchedulerStatuses",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"//  Status code check\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Log the entire response to the Postman console for debugging\r",
+									"console.log(\"Full Response:\", JSON.stringify(jsonData, null, 2));\r",
+									"\r",
+									"// Check if 'Statuses' exists and is an array\r",
+									"pm.test(\"Check if 'Statuses' exists and is an array\", function () {\r",
+									"    pm.expect(jsonData).to.be.an(\"array\").that.is.not.empty;\r",
+									"});\r",
+									"\r",
+									"// Validate that each status object has the expected properties\r",
+									"jsonData.forEach(function(status) {\r",
+									"    pm.test(`Validate Status fields for StatusId: ${status.StatusId}`, function () {\r",
+									"        pm.expect(status).to.have.property(\"Id\").that.is.a(\"number\");\r",
+									"        pm.expect(status).to.have.property(\"StatusGroupId\").that.is.a(\"number\");\r",
+									"        pm.expect(status).to.have.property(\"StatusId\").that.is.a(\"number\");\r",
+									"        pm.expect(status).to.have.property(\"BackgroundColor\").that.is.a(\"string\");\r",
+									"        pm.expect(status).to.have.property(\"FontColor\").that.is.a(\"string\");\r",
+									"        pm.expect(status).to.have.property(\"OrderNumber\").that.is.a(\"number\");\r",
+									"        pm.expect(status).to.have.property(\"IsMandatory\").that.is.a(\"boolean\");\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "b2561b4e-f303-450b-8124-39d7073b4ecd"
+							}
+						}
+					],
+					"id": "9ccca7ac-60e0-4b73-b5ba-2bfaa51ceb3e",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjQxRUYwQTlENTEzNzEyOTNBNjI1QTU5NUQzQUVGRDdEMDczMjBDODRSUzI1NiIsInR5cCI6ImF0K2p3dCIsIng1dCI6IlFlOEtuVkUzRXBPbUphV1YwNjc5ZlFjeURJUSJ9.eyJuYmYiOjE3NDUyMjU5NzcsImV4cCI6MTc0NTU4NTk3NywiaXNzIjoiaHR0cHM6Ly9pZHBxYXYyLnlvdXJkcnMuY29tIiwiYXVkIjpbInlvdXJkcnNhcGkiLCJ5b3VyZHJzaWRwYXBpIiwieW91cmRyc3N5Y3dlYnNlcnZpY2UiXSwiY2xpZW50X2lkIjoieW91cmRycy5pbnRlcmFjdGl2ZS5wdWJsaWMud2ViLnFhdjIiLCJzdWIiOiI4OTIwIiwiYXV0aF90aW1lIjoxNzQ1MjI1OTY0LCJpZHAiOiJsb2NhbCIsInJvbGUiOiIxLDQsODMiLCJhbGxvd2VkZG9tYWluIjoicWFmLnlvdXJkcnMuY29tIiwiYXNzb2NpYXRlZGJ1c2luZXNzY2xpZW50cyI6Ilt7XCJidXNpbmVzc2NsaWVudHVuaXF1ZWlkXCI6XCJlYjRkYjkwY1wiLFwiYnVzaW5lc3NjbGllbnRtZW1iZXJpZFwiOjg5MjAsXCJidXNpbmVzc2NsaWVudG5hbWVcIjpcIkhlYWx0aCBFYXN0XCIsXCJzdWJkb21pblwiOlwicWFmLnlvdXJkcnMuY29tXCJ9XSIsImJ1c2luZXNzY2xpZW50dW5pcXVlaWQiOiJlYjRkYjkwYyIsInVuYW1lIjoiUUFUZWFtQHlkLmNvbSIsIm9wZW50b2thcGlrZXkiOiI0Nzg1MDkwMSIsInVwZG94ZmF4bnVtYmVyIjoiODg4NDQwNDU5OCIsImp0aSI6IjkxODdBRDNBNkY3MUVFODFCMjdFMzI4OTVDQ0QxNjU2Iiwic2lkIjoiNUIwMDc3QkQ1NkFDRDBFOEUzOURCNDM4OTk4QzgwOUQiLCJpYXQiOjE3NDUyMjU5NzcsInNjb3BlIjpbIm9wZW5pZCIsInByb2ZpbGUiLCJlbWFpbCIsInlvdXJkcnNhcGlzY29wZSIsInlvdXJkcnNpZHBhcGlzY29wZSIsInlvdXJkcnNzeWN3ZWJzZXJ2aWNlc2NvcGUiLCJvZmZsaW5lX2FjY2VzcyJdLCJhbXIiOlsicHdkIl19.TRKBD6ID_vJw3kGa7ipLNTq01LEtAbUhgyVLlKm9QncRNHurUcM8q0rn6WUSH57QfZijtbcEPKm-xvCiQO0Fmj13LaH_OsgAqblJP-AEfFXjqOJnu6d2NfkT-_79dQHm7hRR5FFPnixeF7_ebaQ5mBuyrx8fIwmk5KegSXiV9b0KQuszKK3OmF4fU6Ul80lV0-hbniKgTu_3C5lqP1aN8IngzMo6WCDurYRZ5ow5mqsiLgXBuIPmsxFHqU4HaWyQ1JBc0NRiZBEsoKUZtGJ1EXGhjv9EZGiHuirvmIIr5KXl_s9QpF0Sps0gis_pxUjNOxME7aMK-AKuomwtpk9QDuRBob_plb8WkaTiyD9j8HKxP0uPdSgu_eTSEovz3fJ3fWIgtF6rrSDDRjPtX3lJoF1KPCpas23ctf8igjUR8lqZhJbCDb4wda7zOFV3dZBzxNxMpUc7YYWpdfP53jJwbWuV0FEAt5zlOKTEkOyOcq2meBCrX9S01aQov-ZOkcr_ThnqJj9Z58CZFD2xMy2yxfS3T_TmQnoaisR7SyRQwj2wa7iwDLkXXBV9FNfgf5_HYI4tYYayFt0e0v8U2ZHSfzOUxEQGKgXsmfPYucnOBXYy3a38wbJOhWMRTus4AEoFkph29mx0mdF2WzHiY91F-GcytqZaKpdF-7noieKHaOE"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/ehr/Scheduler/Statuses"
+					},
+					"response": []
+				},
+				{
+					"name": "GetAppontmentMemberStatuses",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"//  Status code check\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"// Log the entire response to the Postman console for debugging\r",
+									"console.log(\"Full Response:\", JSON.stringify(jsonData, null, 2));\r",
+									"\r",
+									"// Test 1: Check if 'Statuses' exists and is an array\r",
+									"pm.test(\"Check if response is an array and not empty\", function () {\r",
+									"    pm.expect(jsonData).to.be.an(\"array\").that.is.not.empty;\r",
+									"});\r",
+									"\r",
+									"// Test 2: Validate the structure of each status object\r",
+									"jsonData.forEach(function(status) {\r",
+									"    pm.test(`Validate Status fields for StatusId: ${status.StatusId}`, function () {\r",
+									"        pm.expect(status).to.have.property(\"Id\").that.is.a(\"number\");\r",
+									"        pm.expect(status).to.have.property(\"MemberId\").that.is.a(\"number\");\r",
+									"        pm.expect(status).to.have.property(\"StatusGroupId\").that.is.a(\"number\");\r",
+									"        pm.expect(status).to.have.property(\"StatusId\").that.is.a(\"number\");\r",
+									"        pm.expect(status).to.have.property(\"OrderNumber\").that.is.a(\"number\");\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"// Test 3: Check if specific StatusIds exist\r",
+									"pm.test(\"Check if specific StatusIds exist\", function () {\r",
+									"    const statusIds = jsonData.map(status => status.StatusId);\r",
+									"    pm.expect(statusIds).to.include(3);  // Check if StatusId 3 is in the list\r",
+									"    pm.expect(statusIds).to.include(9);  // Check if StatusId 9 is in the list\r",
+									"    pm.expect(statusIds).to.include(114);  // Check if StatusId 114 is in the list\r",
+									"    pm.expect(statusIds).to.include(38);  // Check if StatusId 38 is in the list\r",
+									"    pm.expect(statusIds).to.include(17);  // Check if StatusId 17 is in the list\r",
+									"});\r",
+									"\r",
+									"// Test 4: Ensure that StatusId is neither null nor undefined\r",
+									"jsonData.forEach(function(status) {\r",
+									"    pm.test(`Ensure StatusId is not null or undefined for StatusId: ${status.StatusId}`, function () {\r",
+									"        pm.expect(status.StatusId).to.not.be.null;\r",
+									"        pm.expect(status.StatusId).to.not.be.undefined;\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "ffe21084-91d6-4cb3-bcb0-7aa6462b1a2c"
+							}
+						}
+					],
+					"id": "58360ae2-aef2-4b60-a8e4-23e2531607e4",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/ehr/AppointmentDashboard/Member/Statuses"
+					},
+					"response": []
+				},
+				{
+					"name": "GetAppointmentToolTipInformation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"//  Test if 'PatientPhones' is an array and empty\r",
+									"pm.test(\"PatientPhones should be an empty array\", function () {\r",
+									"    pm.expect(jsonData.PatientPhones).to.be.an(\"array\").that.is.empty;\r",
+									"});\r",
+									"\r",
+									"//  Test if 'CaseNotes' is an array and empty\r",
+									"pm.test(\"CaseNotes should be an empty array\", function () {\r",
+									"    pm.expect(jsonData.CaseNotes).to.be.an(\"array\").that.is.empty;\r",
+									"});\r",
+									"\r",
+									"//  Test if 'Alerts' exists and has correct properties\r",
+									"pm.test(\"Alerts should exist and have proper structure\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"Alerts\");\r",
+									"    pm.expect(jsonData.Alerts).to.have.property(\"EpisodePatientAlert\").that.is.an(\"array\");\r",
+									"    pm.expect(jsonData.Alerts).to.have.property(\"PagingInfo\").that.is.an(\"object\");\r",
+									"    pm.expect(jsonData.Alerts.PagingInfo).to.have.property(\"TotalItems\").that.is.a(\"number\");\r",
+									"    pm.expect(jsonData.Alerts.PagingInfo).to.have.property(\"ItemsPerPage\").that.is.a(\"number\");\r",
+									"    pm.expect(jsonData.Alerts.PagingInfo).to.have.property(\"CurrentPage\").that.is.a(\"number\");\r",
+									"});\r",
+									"\r",
+									"//  Ensure PagingInfo values are correct (for example, TotalItems, ItemsPerPage, CurrentPage should be 0)\r",
+									"pm.test(\"PagingInfo values should be correct\", function () {\r",
+									"    pm.expect(jsonData.Alerts.PagingInfo.TotalItems).to.eql(0);\r",
+									"    pm.expect(jsonData.Alerts.PagingInfo.ItemsPerPage).to.eql(0);\r",
+									"    pm.expect(jsonData.Alerts.PagingInfo.CurrentPage).to.eql(1);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "a2f08e05-cd5a-448e-b3b6-19939e1414ec"
+							}
+						}
+					],
+					"id": "f50e4686-93c7-4935-8b2c-37e50056bbf6",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/ehr/AppointmentDashboard/ToolTipInformation"
+					},
+					"response": []
+				}
+			],
+			"id": "bc29d616-80f5-46ed-bdcb-24916f1d1e3b"
+		},
+		{
+			"name": "Provider DB",
+			"item": [
+				{
+					"name": "GetProviderDB",
+					"id": "829fed0d-26a0-4539-bc0c-04e1effacf42",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/ehr/ProviderDashboard"
+					},
+					"response": []
+				},
+				{
+					"name": "GetFieldsProviderDB",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"//  Status code check\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"//  Test if the response contains 'DashboardDisplayFields' and is an array\r",
+									"pm.test(\"DashboardDisplayFields should be an array\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"DashboardDisplayFields\");\r",
+									"    pm.expect(jsonData.DashboardDisplayFields).to.be.an(\"array\").that.is.not.empty;\r",
+									"});\r",
+									"\r",
+									"//  Test if the first item in 'DashboardDisplayFields' has the expected properties\r",
+									"const firstField = jsonData.DashboardDisplayFields[0];\r",
+									"\r",
+									"pm.test(\"Validate first DashboardDisplayFields item\", function () {\r",
+									"    pm.expect(firstField).to.have.property(\"IsDef\").that.is.a(\"number\").and.eql(1);\r",
+									"    pm.expect(firstField).to.have.property(\"DisplayName\").that.is.a(\"string\").and.eql(\"Patient Name\");\r",
+									"    pm.expect(firstField).to.have.property(\"MasterDataGroupId\").that.is.a(\"number\").and.eql(0);\r",
+									"    pm.expect(firstField).to.have.property(\"DataSource\").that.is.a(\"string\").and.eql(\"\");\r",
+									"    pm.expect(firstField).to.have.property(\"FId\").that.is.a(\"number\").and.eql(1);\r",
+									"    pm.expect(firstField).to.have.property(\"Ord\").that.is.a(\"number\").and.eql(1);\r",
+									"});\r",
+									"\r",
+									"//  Check if 'Id' and 'DashboardId' are present and are numbers\r",
+									"pm.test(\"Validate Id and DashboardId\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"Id\").that.is.a(\"number\").and.eql(2);\r",
+									"    pm.expect(jsonData).to.have.property(\"DashboardId\").that.is.a(\"number\").and.eql(2);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "676116a7-214c-4116-988c-ca183fb335c0"
+							}
+						}
+					],
+					"id": "cd96ba29-0d1d-4f59-b34e-1443a9b358c9",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/ehr/Dashboard/2/Fields"
+					},
+					"response": []
+				},
+				{
+					"name": "GetMembersProviderDB",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"//  Status code check\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Test if the response contains 'Member' and it is an array\r",
+									"pm.test(\"Member should be an array\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"Member\");\r",
+									"    pm.expect(jsonData.Member).to.be.an(\"array\").that.is.not.empty;\r",
+									"});\r",
+									"\r",
+									"// Test the properties of the first Member in the array\r",
+									"const member = jsonData.Member[0];\r",
+									"\r",
+									"pm.test(\"Validate first member details\", function () {\r",
+									"    pm.expect(member).to.have.property(\"MemberId\").that.is.a(\"number\").and.eql(11327);\r",
+									"    pm.expect(member).to.have.property(\"DisplayName\").that.is.a(\"string\").and.eql(\"Abhishek Kumar\");\r",
+									"    pm.expect(member).to.have.property(\"ShortName\").that.is.a(\"string\").and.eql(\"Dr Kumar\");\r",
+									"    pm.expect(member).to.have.property(\"GenderId\").that.is.a(\"number\").and.eql(1);\r",
+									"    pm.expect(member).to.have.property(\"EmailAddress\").that.is.a(\"string\").and.eql(\"AbhishekKumar@yd.com\");\r",
+									"    pm.expect(member).to.have.property(\"Reasons\").that.is.a(\"string\").and.eql(\"reh\");\r",
+									"    pm.expect(member).to.have.property(\"IsAccountLocked\").that.is.a(\"boolean\").and.eql(false);\r",
+									"    pm.expect(member).to.have.property(\"IsAccountSuspended\").that.is.a(\"boolean\").and.eql(false);\r",
+									"    pm.expect(member).to.have.property(\"ProfilePhoto\").that.is.a(\"string\").and.eql(\"images_aZrASMYAfu.jpg\");\r",
+									"    pm.expect(member).to.have.property(\"IsActive\").that.is.a(\"boolean\").and.eql(true);\r",
+									"});\r",
+									"\r",
+									"// Test that 'DOB' property is either null or a valid date\r",
+									"pm.test(\"DOB should be null or a valid date\", function () {\r",
+									"    const dob = member.DOB;\r",
+									"    // If DOB is not null, it should be a valid date string\r",
+									"    if (dob !== null) {\r",
+									"        pm.expect(dob).to.be.a(\"string\").that.match(/\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}/);\r",
+									"    } else {\r",
+									"        pm.expect(dob).to.be.null;\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "59a45875-b404-46f3-96a9-47fefb67c923"
+							}
+						}
+					],
+					"id": "74fb2183-a208-41b3-8895-689c1d9516e4",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/ehr/Member?SearchRoleCategoryIds=36",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ehr",
+								"Member"
+							],
+							"query": [
+								{
+									"key": "SearchRoleCategoryIds",
+									"value": "36"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetFavFiltersProviderDB",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the response JSON\r",
+									"const jsonData = pm.response.json();\r",
+									"console.log(jsonData);  // Logs the full response\r",
+									"\r",
+									"// Status code check\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Check if response is an array\r",
+									"pm.test(\"Response is an array\", function () {\r",
+									"    pm.expect(jsonData).to.be.an(\"array\");\r",
+									"});\r",
+									"\r",
+									"// Proceed only if the response has items\r",
+									"if (jsonData.length > 0) {\r",
+									"    pm.test(\"Check if required properties exist\", function () {\r",
+									"        pm.expect(jsonData[0]).to.have.property('Id').that.is.a('number');\r",
+									"        pm.expect(jsonData[0]).to.have.property('DashboardId').that.is.a('number');\r",
+									"        pm.expect(jsonData[0]).to.have.property('MemberId').that.is.a('number');\r",
+									"        pm.expect(jsonData[0]).to.have.property('FilterName').that.is.a('string');\r",
+									"        pm.expect(jsonData[0]).to.have.property('FilterValues').that.is.an('array');\r",
+									"        pm.expect(jsonData[0]).to.have.property('IsActive').that.is.a('boolean');\r",
+									"        pm.expect(jsonData[0]).to.have.property('IsDefaultFilter').that.is.a('boolean');\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"FilterValues should be an array and not empty\", function () {\r",
+									"        pm.expect(jsonData[0].FilterValues).to.be.an(\"array\").that.is.not.empty;\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"Each FilterValue should contain FId and Value\", function () {\r",
+									"        jsonData[0].FilterValues.forEach(function (filterValue) {\r",
+									"            pm.expect(filterValue).to.have.property('FId').that.is.a('number');\r",
+									"            pm.expect(filterValue).to.have.property('Value').that.is.a('string');\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"IsActive should be true\", function () {\r",
+									"        pm.expect(jsonData[0].IsActive).to.eql(true);\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"IsDefaultFilter should be false\", function () {\r",
+									"        pm.expect(jsonData[0].IsDefaultFilter).to.eql(false);\r",
+									"    });\r",
+									"} else {\r",
+									"    console.warn(\" Response array is empty — skipping property tests.\");\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "f2ee795d-50c5-4a87-8d2c-0ce409695784"
+							}
+						}
+					],
+					"id": "96a55678-2558-40f9-b23c-b5543fb272fb",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/ehr/Dashboard/2/FavoriteFilters"
+					},
+					"response": []
+				},
+				{
+					"name": "GetFormConfigurationProviderDB",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse and log the response\r",
+									"const jsonData = pm.response.json();\r",
+									"console.log(\"Full Response:\", jsonData);\r",
+									"\r",
+									"//  Status code check\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"//  Response should be a valid object\r",
+									"pm.test(\"Response is a valid object\", function () {\r",
+									"    pm.expect(jsonData).to.be.an(\"object\");\r",
+									"});\r",
+									"\r",
+									"//  Check for fields existence, allow nulls\r",
+									"pm.test(\"Check required properties (even if null)\", function () {\r",
+									"    pm.expect(jsonData).to.have.property('Id');\r",
+									"    pm.expect(jsonData).to.have.property('DashboardId');\r",
+									"    pm.expect(jsonData).to.have.property('SelectedDisplayFields');\r",
+									"    pm.expect(jsonData).to.have.property('SelectedFilterFields');\r",
+									"\r",
+									"    // Optional: type checks if not null\r",
+									"    if (jsonData.Id !== null) {\r",
+									"        pm.expect(jsonData.Id).to.be.a(\"number\");\r",
+									"    }\r",
+									"\r",
+									"    if (jsonData.DashboardId !== null) {\r",
+									"        pm.expect(jsonData.DashboardId).to.be.a(\"number\");\r",
+									"    }\r",
+									"\r",
+									"    if (jsonData.SelectedDisplayFields !== null) {\r",
+									"        pm.expect(jsonData.SelectedDisplayFields).to.be.an(\"array\");\r",
+									"    }\r",
+									"\r",
+									"    if (jsonData.SelectedFilterFields !== null) {\r",
+									"        pm.expect(jsonData.SelectedFilterFields).to.be.an(\"array\");\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"//  Validate SelectedDisplayFields if present and not null\r",
+									"if (Array.isArray(jsonData.SelectedDisplayFields) && jsonData.SelectedDisplayFields.length > 0) {\r",
+									"    pm.test(\"Each SelectedDisplayField should contain FId and Ord\", function () {\r",
+									"        jsonData.SelectedDisplayFields.forEach(function (field) {\r",
+									"            pm.expect(field).to.have.property('FId').that.is.a('number');\r",
+									"            pm.expect(field).to.have.property('Ord').that.is.a('number');\r",
+									"        });\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"//  Validate SelectedFilterFields if present and not null\r",
+									"if (Array.isArray(jsonData.SelectedFilterFields) && jsonData.SelectedFilterFields.length > 0) {\r",
+									"    pm.test(\"Each SelectedFilterField should contain FId and Ord\", function () {\r",
+									"        jsonData.SelectedFilterFields.forEach(function (field) {\r",
+									"            pm.expect(field).to.have.property('FId').that.is.a('number');\r",
+									"            pm.expect(field).to.have.property('Ord').that.is.a('number');\r",
+									"        });\r",
+									"    });\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "cdffb841-c76b-449e-bacb-4c0b67954d86"
+							}
+						}
+					],
+					"id": "4fe532dd-a442-4f21-b548-afe97f4222ed",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/ehr/Member/Dashboard/2/Fields"
+					},
+					"response": []
+				},
+				{
+					"name": "GetSummaryCountProviderDB",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the response JSON\r",
+									"const jsonData = pm.response.json();\r",
+									"console.log(jsonData);  // Log the response to inspect its structure\r",
+									"\r",
+									"//  Status code check\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"//  Check if all properties exist and are numbers\r",
+									"pm.test(\"Check if all required properties are present and are numbers\", function () {\r",
+									"    pm.expect(jsonData).to.have.property('CheckedOutAppointments').that.is.a('number');\r",
+									"    pm.expect(jsonData).to.have.property('CancelledAppointments').that.is.a('number');\r",
+									"    pm.expect(jsonData).to.have.property('RequestedAppointments').that.is.a('number');\r",
+									"    pm.expect(jsonData).to.have.property('PendingDictationApproval').that.is.a('number');\r",
+									"    pm.expect(jsonData).to.have.property('DictationPending').that.is.a('number');\r",
+									"    pm.expect(jsonData).to.have.property('SuperBillCount').that.is.a('number');\r",
+									"});\r",
+									"\r",
+									"//  Check if the values are non-negative integers (since they represent counts)\r",
+									"pm.test(\"Ensure all counts are non-negative\", function () {\r",
+									"    pm.expect(jsonData.CheckedOutAppointments).to.be.at.least(0);\r",
+									"    pm.expect(jsonData.CancelledAppointments).to.be.at.least(0);\r",
+									"    pm.expect(jsonData.RequestedAppointments).to.be.at.least(0);\r",
+									"    pm.expect(jsonData.PendingDictationApproval).to.be.at.least(0);\r",
+									"    pm.expect(jsonData.DictationPending).to.be.at.least(0);\r",
+									"    pm.expect(jsonData.SuperBillCount).to.be.at.least(0);\r",
+									"});\r",
+									"\r",
+									"//  Ensure that DictationPending and PendingDictationApproval are not negative\r",
+									"pm.test(\"Ensure Dictation counts are not negative\", function () {\r",
+									"    pm.expect(jsonData.DictationPending).to.be.at.least(0);\r",
+									"    pm.expect(jsonData.PendingDictationApproval).to.be.at.least(0);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "8c9c5226-c7b1-4a9f-9916-11e3dce4e4f6"
+							}
+						}
+					],
+					"id": "f365a563-2017-42af-92ab-a0c6983ea9fe",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/ehr/ProviderDashboard/GetSummaryCounts?AppointmentFromDate=2025-04-11",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ehr",
+								"ProviderDashboard",
+								"GetSummaryCounts"
+							],
+							"query": [
+								{
+									"key": "AppointmentFromDate",
+									"value": "2025-04-11"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "3e6d8c80-9d17-4c7a-9e86-b8df274cb76c"
+		},
+		{
+			"name": "PHS",
+			"item": [
+				{
+					"name": "CaseDetails Tab",
+					"item": [
+						{
+							"name": "PatientDetails",
+							"id": "846ea992-caa6-4590-b047-ee0b57c40e38",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/ehr/Patient?PatientIds=122932",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"ehr",
+										"Patient"
+									],
+									"query": [
+										{
+											"key": "PatientIds",
+											"value": "122932"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "EpisodeDetails",
+							"id": "7f128f32-3dcc-497d-b705-b234f20896f7",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/ehr/Episode?PatientIds=122932",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"ehr",
+										"Episode"
+									],
+									"query": [
+										{
+											"key": "PatientIds",
+											"value": "122932"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PatientPhones",
+							"id": "c3de9c17-7a3d-456c-868f-5fa51596ae0d",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/ehr/Patient/Phones?PatientIds=122932",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"ehr",
+										"Patient",
+										"Phones"
+									],
+									"query": [
+										{
+											"key": "PatientIds",
+											"value": "122932"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "AuthorizationContactModes",
+							"id": "bfe32161-6634-4a0b-884c-ae93c8a3f3ec",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{base_url}}/ehr/Patient/122932/AuthorizationContactModes"
+							},
+							"response": []
+						},
+						{
+							"name": "EpisodeAlerts",
+							"id": "08e7e344-6302-4382-9aec-4659b8e4cecb",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/ehr/Episode/129367/Alert?page=0",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"ehr",
+										"Episode",
+										"129367",
+										"Alert"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "0"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Documents1",
+							"id": "3158b743-913d-4987-a56e-a6a596467f83",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/ehr/Episode/Document?EpisodeId=129367&DocumentFolderIds=3&DocumentTypeIds&ProviderId&CreationFromDate=&CreationToDate=&TreatmentFromDate=&TreatmentToDate=&GetDeletedDocuments=false&Page=0",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"ehr",
+										"Episode",
+										"Document"
+									],
+									"query": [
+										{
+											"key": "EpisodeId",
+											"value": "129367"
+										},
+										{
+											"key": "DocumentFolderIds",
+											"value": "3"
+										},
+										{
+											"key": "DocumentTypeIds",
+											"value": null
+										},
+										{
+											"key": "ProviderId",
+											"value": null
+										},
+										{
+											"key": "CreationFromDate",
+											"value": ""
+										},
+										{
+											"key": "CreationToDate",
+											"value": ""
+										},
+										{
+											"key": "TreatmentFromDate",
+											"value": ""
+										},
+										{
+											"key": "TreatmentToDate",
+											"value": ""
+										},
+										{
+											"key": "GetDeletedDocuments",
+											"value": "false"
+										},
+										{
+											"key": "Page",
+											"value": "0"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Documents2",
+							"id": "d9880c9a-2424-4c3c-afb3-afd21350657e",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/ehr/Episode/Document?EpisodeId=129367&DocumentFolderIds=5&DocumentTypeIds&ProviderId&CreationFromDate=&CreationToDate=&TreatmentFromDate=&TreatmentToDate=&GetDeletedDocuments=false&Page=0",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"ehr",
+										"Episode",
+										"Document"
+									],
+									"query": [
+										{
+											"key": "EpisodeId",
+											"value": "129367"
+										},
+										{
+											"key": "DocumentFolderIds",
+											"value": "5"
+										},
+										{
+											"key": "DocumentTypeIds",
+											"value": null
+										},
+										{
+											"key": "ProviderId",
+											"value": null
+										},
+										{
+											"key": "CreationFromDate",
+											"value": ""
+										},
+										{
+											"key": "CreationToDate",
+											"value": ""
+										},
+										{
+											"key": "TreatmentFromDate",
+											"value": ""
+										},
+										{
+											"key": "TreatmentToDate",
+											"value": ""
+										},
+										{
+											"key": "GetDeletedDocuments",
+											"value": "false"
+										},
+										{
+											"key": "Page",
+											"value": "0"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Documents3",
+							"id": "64d5c06c-b94f-46d5-91a4-e3eed8e7a202",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/ehr/Episode/Document?EpisodeId=129367&DocumentFolderIds=5&DocumentTypeIds&ProviderId&CreationFromDate=&CreationToDate=&TreatmentFromDate=&TreatmentToDate=&GetDeletedDocuments=false&Page=0",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"ehr",
+										"Episode",
+										"Document"
+									],
+									"query": [
+										{
+											"key": "EpisodeId",
+											"value": "129367"
+										},
+										{
+											"key": "DocumentFolderIds",
+											"value": "5"
+										},
+										{
+											"key": "DocumentTypeIds",
+											"value": null
+										},
+										{
+											"key": "ProviderId",
+											"value": null
+										},
+										{
+											"key": "CreationFromDate",
+											"value": ""
+										},
+										{
+											"key": "CreationToDate",
+											"value": ""
+										},
+										{
+											"key": "TreatmentFromDate",
+											"value": ""
+										},
+										{
+											"key": "TreatmentToDate",
+											"value": ""
+										},
+										{
+											"key": "GetDeletedDocuments",
+											"value": "false"
+										},
+										{
+											"key": "Page",
+											"value": "0"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "AppointmentCountsByType",
+							"id": "76dd5d3d-6f52-4301-bd74-790c4ea30acd",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/ehr/Appointment/AppointmentCountsByType?EpisodeId=129367",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"ehr",
+										"Appointment",
+										"AppointmentCountsByType"
+									],
+									"query": [
+										{
+											"key": "EpisodeId",
+											"value": "129367"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Compliance",
+							"id": "08c365f7-4b69-4928-bfe4-317203364cba",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{base_url}}/ehr/Episode/129367/Compliance"
+							},
+							"response": []
+						},
+						{
+							"name": "AppointmentsList",
+							"id": "7a5e3aa4-0faf-4def-91df-e6a797b8a43a",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/ehr/Appointment?EpisodeIds=129367&Page=1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"ehr",
+										"Appointment"
+									],
+									"query": [
+										{
+											"key": "EpisodeIds",
+											"value": "129367"
+										},
+										{
+											"key": "Page",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "ERxMedicationManagement",
+							"id": "80201193-3ce3-4eac-9eef-7475e9d8eb96",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/ehr/ERxMedicationManagement?PatientId=122932",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"ehr",
+										"ERxMedicationManagement"
+									],
+									"query": [
+										{
+											"key": "PatientId",
+											"value": "122932"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PatientAlerts",
+							"id": "d18cda92-cb1f-4580-be7b-161f3b10c29e",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/ehr/Patient/122932/Alert?page=0",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"ehr",
+										"Patient",
+										"122932",
+										"Alert"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "0"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "ec9be557-afdb-44f8-a2b0-b820a744bfd7"
+				}
+			],
+			"id": "bdfedef6-b2f9-4b42-87fc-61bc99962a7b"
+		},
+		{
+			"name": "My Transcription",
+			"item": [
+				{
+					"name": "GetTranscriptionDictationFiles",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "82d0d066-26db-4261-a98e-2cc885c24855"
+							}
+						}
+					],
+					"id": "a5a46f15-65e4-49ee-b179-c019c908fb25",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/ehr/Transcription?IsArchived=0&UploadSourceTypeId&DictationTypeId&StatusId=107%2C117%2C118%2C119%2C120%2C121%2C122%2C123%2C124%2C125%2C126%2C130%2C131%2C132&IsStatFile&PracticeId=81&LocationId&ProviderId&AppointmentStartDate=2025-04-01&AppointmentEndDate=2025-04-30&AppointmentTypeId&CaseNumber&AccountNumber&PatientName&PatientGenderId&CreatedBy&Page=1&CreatedStartDate&CreatedEndDate\n\n",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ehr",
+								"Transcription"
+							],
+							"query": [
+								{
+									"key": "IsArchived",
+									"value": "0"
+								},
+								{
+									"key": "UploadSourceTypeId",
+									"value": null
+								},
+								{
+									"key": "DictationTypeId",
+									"value": null
+								},
+								{
+									"key": "StatusId",
+									"value": "107%2C117%2C118%2C119%2C120%2C121%2C122%2C123%2C124%2C125%2C126%2C130%2C131%2C132"
+								},
+								{
+									"key": "IsStatFile",
+									"value": null
+								},
+								{
+									"key": "PracticeId",
+									"value": "81"
+								},
+								{
+									"key": "LocationId",
+									"value": null
+								},
+								{
+									"key": "ProviderId",
+									"value": null
+								},
+								{
+									"key": "AppointmentStartDate",
+									"value": "2025-04-01"
+								},
+								{
+									"key": "AppointmentEndDate",
+									"value": "2025-04-30"
+								},
+								{
+									"key": "AppointmentTypeId",
+									"value": null
+								},
+								{
+									"key": "CaseNumber",
+									"value": null
+								},
+								{
+									"key": "AccountNumber",
+									"value": null
+								},
+								{
+									"key": "PatientName",
+									"value": null
+								},
+								{
+									"key": "PatientGenderId",
+									"value": null
+								},
+								{
+									"key": "CreatedBy",
+									"value": null
+								},
+								{
+									"key": "Page",
+									"value": "1"
+								},
+								{
+									"key": "CreatedStartDate",
+									"value": null
+								},
+								{
+									"key": "CreatedEndDate\n\n",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetDictationAudio",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the JSON response\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"//  Check if it's a non-empty array\r",
+									"pm.test(\"Response is a non-empty array\", function () {\r",
+									"    pm.expect(jsonData).to.be.an(\"array\").that.is.not.empty;\r",
+									"});\r",
+									"\r",
+									"//  Access first item\r",
+									"const file = jsonData[0];\r",
+									"\r",
+									"// Validate properties\r",
+									"pm.test(\"First item has expected properties\", function () {\r",
+									"    pm.expect(file).to.have.property(\"TranscriptionId\").that.is.a(\"number\");\r",
+									"    pm.expect(file).to.have.property(\"PhysicalName\").that.is.a(\"string\");\r",
+									"    pm.expect(file).to.have.property(\"IsAddendum\").that.is.a(\"boolean\");\r",
+									"});\r",
+									"\r",
+									"//  Log details for debug\r",
+									"console.log(\"Transcription File:\", file.PhysicalName);\r",
+									"console.log(\"Is Addendum?\", file.IsAddendum);\r",
+									"\r",
+									"// Save for use in later requests\r",
+									"pm.environment.set(\"TranscriptionId\", file.TranscriptionId);\r",
+									"pm.environment.set(\"PhysicalName\", file.PhysicalName);\r",
+									"pm.environment.set(\"IsAddendum\", file.IsAddendum.toString()); // Stored as string for safety\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "81400191-f71e-4991-b9d5-65f36da4060e"
+							}
+						}
+					],
+					"id": "82fdd059-f08c-49d5-bfcd-c4b87715d741",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/ehr/DictationAudio?TranscriptionId=732242",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ehr",
+								"DictationAudio"
+							],
+							"query": [
+								{
+									"key": "TranscriptionId",
+									"value": "732242"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetSignedUrl",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the response\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"//  Check that SignedUrl and FileName are present\r",
+									"pm.test(\"Signed URL and FileName are present\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"SignedUrl\").that.is.a(\"string\").and.includes(\"https://\");\r",
+									"    pm.expect(jsonData).to.have.property(\"FileName\").that.is.a(\"string\").and.match(/\\.docx$/);\r",
+									"});\r",
+									"\r",
+									"//  Log to console for debugging\r",
+									"console.log(\"Download URL:\", jsonData.SignedUrl);\r",
+									"console.log(\"File Name:\", jsonData.FileName);\r",
+									"\r",
+									"//  Save as environment variables for chaining\r",
+									"pm.environment.set(\"SignedUrl\", jsonData.SignedUrl);\r",
+									"pm.environment.set(\"FileName\", jsonData.FileName);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"id": "137ab4c7-5a8f-4806-8386-545573d26d7d"
+							}
+						}
+					],
+					"id": "eee2c4b0-6c70-4e2b-bfce-02bac6a5019e",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/ehr/Transcription/SignedUrl?FileName=ArellanoCharlie_ScilarisThomas_04112025_4dad09e9-e03c-425e-9f61-11e761a93a14.docx&IsUpload=false\n",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"ehr",
+								"Transcription",
+								"SignedUrl"
+							],
+							"query": [
+								{
+									"key": "FileName",
+									"value": "ArellanoCharlie_ScilarisThomas_04112025_4dad09e9-e03c-425e-9f61-11e761a93a14.docx"
+								},
+								{
+									"key": "IsUpload",
+									"value": "false\n"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "b7c25303-a1c0-4c61-921a-2b11c1b15d71"
+		},
+		{
+			"name": "Billing Dashboard",
+			"item": [
+				{
+					"name": "Billing",
+					"item": [
+						{
+							"name": "GetBillingFeeSchedules",
+							"id": "a2d03274-3b27-4ac2-a2cb-8b36e288f5b0",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/rcm/Billing/FeeSchedules?id",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"rcm",
+										"Billing",
+										"FeeSchedules"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": null
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingMedicalReport",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"//  Validate fields exist and are proper types\r",
+											"pm.test(\"Signed PDF URL and FileName are present\", function () {\r",
+											"    pm.expect(jsonData).to.have.property(\"SignedUrl\").that.is.a(\"string\").and.includes(\"https://\");\r",
+											"    pm.expect(jsonData).to.have.property(\"FileName\").that.is.a(\"string\").and.match(/\\.pdf$/);\r",
+											"});\r",
+											"\r",
+											"//  Save to environment for future use\r",
+											"pm.environment.set(\"PDFSignedUrl\", jsonData.SignedUrl);\r",
+											"pm.environment.set(\"PDFFileName\", jsonData.FileName);\r",
+											"\r",
+											"//  Log for visibility\r",
+											"console.log(\"PDF Download Link:\", jsonData.SignedUrl);\r",
+											"console.log(\"PDF File Name:\", jsonData.FileName);\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"id": "565cc1dd-0148-4397-9a32-82910c116dd6"
+									}
+								}
+							],
+							"id": "995821d0-7596-4b87-b227-81bf06dc1319",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/ehr/Transcription/DownloadReport?TranscriptionId&AppointmentId=939777\n",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"ehr",
+										"Transcription",
+										"DownloadReport"
+									],
+									"query": [
+										{
+											"key": "TranscriptionId",
+											"value": null
+										},
+										{
+											"key": "AppointmentId",
+											"value": "939777\n"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingFormConfigurationData",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"//  Check the status code is 200 (OK)\r",
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"//  Validate specific fields in the response\r",
+											"pm.test(\"Check if response contains expected fields\", function () {\r",
+											"    pm.expect(jsonData).to.have.property(\"CaseTypeIds\");\r",
+											"    pm.expect(jsonData).to.have.property(\"FormCategoriesId\").that.equals(5);\r",
+											"    pm.expect(jsonData).to.have.property(\"FormCategorieMenuId\").that.equals(26);\r",
+											"    pm.expect(jsonData).to.have.property(\"FormTypeId\").that.equals(2);\r",
+											"    pm.expect(jsonData).to.have.property(\"DashboardId\").that.equals(10);\r",
+											"    pm.expect(jsonData).to.have.property(\"PracticeId\").that.equals(57);\r",
+											"    pm.expect(jsonData).to.have.property(\"LocationId\").that.equals(0);\r",
+											"    pm.expect(jsonData).to.have.property(\"ProviderId\").that.equals(0);\r",
+											"    pm.expect(jsonData).to.have.property(\"AppointmentTypeId\").that.equals(0);\r",
+											"    pm.expect(jsonData).to.have.property(\"FormFrequencyId\").that.equals(2);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"id": "f6415751-4063-48b3-81bc-b6da76ac2b3b"
+									}
+								}
+							],
+							"id": "7198154e-2510-4a37-bceb-cdc396035751",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/rcm/Billing/FormConfigData?BillingFormId=1\n",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"rcm",
+										"Billing",
+										"FormConfigData"
+									],
+									"query": [
+										{
+											"key": "BillingFormId",
+											"value": "1\n"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingDynamicForms",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"//  Check the status code is 200 (OK)\r",
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"//  Validate the FormConfigurations array is present\r",
+											"pm.test(\"FormConfigurations array is present\", function () {\r",
+											"    pm.expect(jsonData).to.have.property(\"FormConfigurations\");\r",
+											"    pm.expect(jsonData.FormConfigurations).to.be.an(\"array\").that.is.not.empty;\r",
+											"});\r",
+											"\r",
+											"//  Check if the first form configuration has the expected properties\r",
+											"const firstFormConfig = jsonData.FormConfigurations[0];\r",
+											"\r",
+											"pm.test(\"Validate first FormConfiguration\", function () {\r",
+											"    pm.expect(firstFormConfig).to.have.property(\"Id\").that.equals(179);\r",
+											"    pm.expect(firstFormConfig).to.have.property(\"PracticeId\").that.equals(57);\r",
+											"    pm.expect(firstFormConfig).to.have.property(\"LocationId\").that.is.null;\r",
+											"    pm.expect(firstFormConfig).to.have.property(\"CaseTypeIds\").that.is.null;\r",
+											"    pm.expect(firstFormConfig).to.have.property(\"AppointmentTypeIds\").that.is.null;\r",
+											"    pm.expect(firstFormConfig).to.have.property(\"ProviderIds\").that.is.null;\r",
+											"    pm.expect(firstFormConfig).to.have.property(\"ProcedureIds\").that.is.null;\r",
+											"    pm.expect(firstFormConfig).to.have.property(\"ProcedureTypeIds\").that.is.null;\r",
+											"    pm.expect(firstFormConfig).to.have.property(\"FormCategoriesId\").that.equals(0);\r",
+											"    pm.expect(firstFormConfig).to.have.property(\"FormCategoriesMenuId\").that.equals(0);\r",
+											"    pm.expect(firstFormConfig).to.have.property(\"FormTypesId\").that.equals(0);\r",
+											"    pm.expect(firstFormConfig).to.have.property(\"FormFrequencyId\").that.is.null;\r",
+											"    pm.expect(firstFormConfig).to.have.property(\"DashboardIds\").that.is.null;\r",
+											"});\r",
+											"\r",
+											"//  Check if the Procedures array is correctly structured\r",
+											"const firstProcedure = firstFormConfig.Procedures[0];\r",
+											"\r",
+											"pm.test(\"Validate Procedure array\", function () {\r",
+											"    pm.expect(firstProcedure).to.have.property(\"Id\").that.is.null;\r",
+											"    pm.expect(firstProcedure).to.have.property(\"ProcedureName\").that.is.null;\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"id": "cc1a7635-9112-48ed-a106-6ffa890139ed"
+									}
+								}
+							],
+							"id": "a4894d92-55b2-42ec-a18d-c8edd54bc94d",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/ehr/DynamicForms/Get?PracticeIds=57&LocationIds=0&CaseTypeIds=411&AppointmentTypeIds=6&ProviderIds=0&ProcedureIds=&ModifiedDate=&ProcedureTypeIds=&FormCategoriesId=5&FormCategoriesMenuId=26&FormTypesId=2&FormFrequencyId=&DashboardIds=10&IsAptInitiated=true",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"ehr",
+										"DynamicForms",
+										"Get"
+									],
+									"query": [
+										{
+											"key": "PracticeIds",
+											"value": "57"
+										},
+										{
+											"key": "LocationIds",
+											"value": "0"
+										},
+										{
+											"key": "CaseTypeIds",
+											"value": "411"
+										},
+										{
+											"key": "AppointmentTypeIds",
+											"value": "6"
+										},
+										{
+											"key": "ProviderIds",
+											"value": "0"
+										},
+										{
+											"key": "ProcedureIds",
+											"value": ""
+										},
+										{
+											"key": "ModifiedDate",
+											"value": ""
+										},
+										{
+											"key": "ProcedureTypeIds",
+											"value": ""
+										},
+										{
+											"key": "FormCategoriesId",
+											"value": "5"
+										},
+										{
+											"key": "FormCategoriesMenuId",
+											"value": "26"
+										},
+										{
+											"key": "FormTypesId",
+											"value": "2"
+										},
+										{
+											"key": "FormFrequencyId",
+											"value": ""
+										},
+										{
+											"key": "DashboardIds",
+											"value": "10"
+										},
+										{
+											"key": "IsAptInitiated",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingTranscriptionReport",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"//  Validate fields exist and are proper types\r",
+											"pm.test(\"Signed PDF URL and FileName are present\", function () {\r",
+											"    pm.expect(jsonData).to.have.property(\"SignedUrl\").that.is.a(\"string\").and.includes(\"https://\");\r",
+											"    pm.expect(jsonData).to.have.property(\"FileName\").that.is.a(\"string\").and.match(/\\.pdf$/);\r",
+											"});\r",
+											"\r",
+											"//  Save to environment for future use\r",
+											"pm.environment.set(\"PDFSignedUrl\", jsonData.SignedUrl);\r",
+											"pm.environment.set(\"PDFFileName\", jsonData.FileName);\r",
+											"\r",
+											"//  Log for visibility\r",
+											"console.log(\"PDF Download Link:\", jsonData.SignedUrl);\r",
+											"console.log(\"PDF File Name:\", jsonData.FileName);\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"id": "7b3765e7-44cb-493a-ad82-56e2e8214ee0"
+									}
+								}
+							],
+							"id": "2d84936e-4aa9-40c0-b12b-99e6076013ea",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/ehr/Transcription/DownloadReport?TranscriptionId&AppointmentId=939777",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"ehr",
+										"Transcription",
+										"DownloadReport"
+									],
+									"query": [
+										{
+											"key": "TranscriptionId",
+											"value": null
+										},
+										{
+											"key": "AppointmentId",
+											"value": "939777"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetClaimCreatedByMembers",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"//  Validate that the response is an array and has valid objects\r",
+											"pm.test(\"Response is an array with valid objects\", function () {\r",
+											"    pm.expect(jsonData).to.be.an(\"array\");\r",
+											"    jsonData.forEach(function (item) {\r",
+											"        pm.expect(item).to.have.property(\"Id\").that.is.a(\"number\");\r",
+											"        pm.expect(item).to.have.property(\"Name\").that.is.a(\"string\");\r",
+											"    });\r",
+											"});\r",
+											"\r",
+											"//  Save the `Id` and `Name` of each user into environment variables\r",
+											"jsonData.forEach(function (item, index) {\r",
+											"    pm.environment.set(`UserId_${index + 1}`, item.Id);\r",
+											"    pm.environment.set(`UserName_${index + 1}`, item.Name);\r",
+											"    console.log(`User ${index + 1}: ID = ${item.Id}, Name = ${item.Name}`);\r",
+											"});\r",
+											"\r",
+											"// Example: Log the first user’s Id and Name\r",
+											"if (jsonData.length > 0) {\r",
+											"    console.log(\"First User: ID =\", jsonData[0].Id, \", Name =\", jsonData[0].Name);\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"id": "f69465d0-42f7-4231-b323-55cf098b9e35"
+									}
+								}
+							],
+							"id": "6c46f018-4d2f-4a20-95df-5412afe7613d",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{base_url}}/rcm/Billing/Claim/CreatedByMembers"
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingModifiers",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"//  Validate that the response is an array and contains valid objects\r",
+											"pm.test(\"Response is an array with valid objects\", function () {\r",
+											"    pm.expect(jsonData).to.be.an(\"array\");\r",
+											"    jsonData.forEach(function (item) {\r",
+											"        pm.expect(item).to.have.property(\"Id\").that.is.a(\"number\");\r",
+											"        pm.expect(item).to.have.property(\"Modifier\").that.is.a(\"string\");\r",
+											"        pm.expect(item).to.have.property(\"Description\").that.is.a(\"string\");\r",
+											"        pm.expect(item).to.have.property(\"modifierdesc\").that.is.a(\"string\");\r",
+											"    });\r",
+											"});\r",
+											"\r",
+											"//  Save the `Id`, `Modifier`, and `modifierdesc` of each item into environment variables\r",
+											"jsonData.forEach(function (item, index) {\r",
+											"    pm.environment.set(`ModifierId_${index + 1}`, item.Id);\r",
+											"    pm.environment.set(`Modifier_${index + 1}`, item.Modifier);\r",
+											"    pm.environment.set(`ModifierDesc_${index + 1}`, item.modifierdesc);\r",
+											"    console.log(`Modifier ${index + 1}: ID = ${item.Id}, Modifier = ${item.Modifier}, Description = ${item.modifierdesc}`);\r",
+											"});\r",
+											"\r",
+											"// Example: Log the first modifier's details\r",
+											"if (jsonData.length > 0) {\r",
+											"    console.log(\"First Modifier: ID =\", jsonData[0].Id, \", Modifier =\", jsonData[0].Modifier, \", Description =\", jsonData[0].modifierdesc);\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"id": "71563e7f-3ad6-492c-83bf-e668277b5ccc"
+									}
+								}
+							],
+							"id": "0ce56fa3-58da-4ded-9174-909c49918b56",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{base_url}}/rcm/Billing/Modifiers"
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingCPTCodeFee",
+							"id": "4ded0ee3-7dcb-4952-8204-fa922c182d0a",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{base_url}}/rcm/Billing/CPTCodeFee"
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingMappedPayer",
+							"id": "1cde11ad-7214-4b6c-b2da-e573361a2ce8",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{base_url}}/rcm/Billing/MappedePayer"
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingePayers",
+							"id": "6bc34a08-3bca-4fe1-ad00-35a56afd9395",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{base_url}}/rcm/Billing/ePayers"
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingForms",
+							"id": "6c18308a-86a1-43ad-9842-893770c1a3e9",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{base_url}}/rcm/Billing/Forms"
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingFormConfigData",
+							"id": "a43bbf50-9c46-4bc0-a08f-28524e940732",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{base_url}}/rcm/Billing/FormConfigData"
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingClaimEAPGAmount",
+							"id": "c40cd007-5822-4474-acd1-91ec1eaf13b7",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{base_url}}/rcm/Billing/Claim/EAPGAmount"
+							},
+							"response": []
+						}
+					],
+					"id": "2ba19a89-e68b-4f6c-9ef7-b640efa49a87"
+				},
+				{
+					"name": "BillingClaimDetails",
+					"item": [
+						{
+							"name": "GetBillingClaim",
+							"id": "7e413f7a-f191-4fe5-a028-fce18b2ad49b",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/rcm/Claim?Claimid&AppointmentId=939777&PracticeId=81&CurrentStatusId=2&ClaimTypeId=1&IsPendingAppt=false&AppointmenttypeId=6",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"rcm",
+										"Claim"
+									],
+									"query": [
+										{
+											"key": "Claimid",
+											"value": null
+										},
+										{
+											"key": "AppointmentId",
+											"value": "939777"
+										},
+										{
+											"key": "PracticeId",
+											"value": "81"
+										},
+										{
+											"key": "CurrentStatusId",
+											"value": "2"
+										},
+										{
+											"key": "ClaimTypeId",
+											"value": "1"
+										},
+										{
+											"key": "IsPendingAppt",
+											"value": "false"
+										},
+										{
+											"key": "AppointmenttypeId",
+											"value": "6"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingClaimForms",
+							"id": "960e2208-ec3c-44fd-944b-6ebcc25e21ef",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/rcm/Claim/Forms?AppointmentId=939777",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"rcm",
+										"Claim",
+										"Forms"
+									],
+									"query": [
+										{
+											"key": "AppointmentId",
+											"value": "939777"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingSupervisingPhysicians",
+							"id": "9899aac1-78e6-4dac-bdf7-e8a419d91f27",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/rcm/Claim/SupervisingPhysicians?PracticeId=81&locationId=149&providerId=15&dos=2025-04-01+08%3A00%3A00.000",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"rcm",
+										"Claim",
+										"SupervisingPhysicians"
+									],
+									"query": [
+										{
+											"key": "PracticeId",
+											"value": "81"
+										},
+										{
+											"key": "locationId",
+											"value": "149"
+										},
+										{
+											"key": "providerId",
+											"value": "15"
+										},
+										{
+											"key": "dos",
+											"value": "2025-04-01+08%3A00%3A00.000"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingClaimPos",
+							"id": "16007455-2dc7-4204-a022-a4aa062bcc5f",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{base_url}}/rcm/Claim/Pos"
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingClaimTos",
+							"id": "5b253651-f07f-4682-b757-3a6554e59907",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{base_url}}/rcm/Claim/Tos"
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingClaimInsuranceform",
+							"id": "2e548c20-711c-4dfc-aef2-e3ea38da851d",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/rcm/Claim/InsuranceForm?ClaimId=612482&FormId=1&AppointmentId=939918&ConsolidateFileName=CL2504612482_Jordan_Bodhi_9caa24de-b02b-4312-bcf1-39fe53dfd2de.pdf",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"rcm",
+										"Claim",
+										"InsuranceForm"
+									],
+									"query": [
+										{
+											"key": "ClaimId",
+											"value": "612482"
+										},
+										{
+											"key": "FormId",
+											"value": "1"
+										},
+										{
+											"key": "AppointmentId",
+											"value": "939918"
+										},
+										{
+											"key": "ConsolidateFileName",
+											"value": "CL2504612482_Jordan_Bodhi_9caa24de-b02b-4312-bcf1-39fe53dfd2de.pdf"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingClaimSuperBills",
+							"id": "b3380fbe-aea1-4f29-8741-3379c9ab7c68",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/rcm/Claim/SuperBills?EpisodeId=134365&ProviderId=15",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"rcm",
+										"Claim",
+										"SuperBills"
+									],
+									"query": [
+										{
+											"key": "EpisodeId",
+											"value": "134365"
+										},
+										{
+											"key": "ProviderId",
+											"value": "15"
+										},
+										{
+											"key": "TreatmentDate",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "695901b8-9521-40e1-97c7-46d477834bc8"
+				},
+				{
+					"name": "BillingDashboard",
+					"item": [
+						{
+							"name": "GetBillingSummaryCounts",
+							"id": "a937a36b-90a5-4d78-85de-347180b48d43",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/rcm/BillingDashboard/SummaryCounts?PracticeIds=81",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"rcm",
+										"BillingDashboard",
+										"SummaryCounts"
+									],
+									"query": [
+										{
+											"key": "PracticeIds",
+											"value": "81"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingPracticeLocation",
+							"id": "2cfd251b-0f38-4618-8841-ac397e0544a7",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/ehr/PracticeLocation?PracticeId=81&LocationId=149&ItemsPerPage=0&Page=1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"ehr",
+										"PracticeLocation"
+									],
+									"query": [
+										{
+											"key": "PracticeId",
+											"value": "81"
+										},
+										{
+											"key": "LocationId",
+											"value": "149"
+										},
+										{
+											"key": "ItemsPerPage",
+											"value": "0"
+										},
+										{
+											"key": "Page",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetEclaimstatus",
+							"id": "8b98bbd0-cf79-4f28-a58c-7c044ec0a509",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/rcm/BillingDashboard/eClaimStatusDetails?Claimid=<long>&Page=1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"rcm",
+										"BillingDashboard",
+										"eClaimStatusDetails"
+									],
+									"query": [
+										{
+											"key": "Claimid",
+											"value": "<long>"
+										},
+										{
+											"key": "Page",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GetBillingDashboardSearchresuts",
+							"id": "da700fcc-9b7b-42be-aa6c-afc83d044e66",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/rcm/BillingDashboard?AppointmentStartDate=2025-04-11T19%3A38%3A10.341&AppointmentEndDate=2025-04-11T19%3A38%3A10.341&Page=1&PracticeIds=81&BillingStatusIds=2%2C5%2C17%2C86%2C122%2C124%2C133%2C134%2C135%2C136%2C137%2C138%2C147%2C160%2C161%2C198%2C199%2C213&PayorIds&LoggedInMemberId=8920",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"rcm",
+										"BillingDashboard"
+									],
+									"query": [
+										{
+											"key": "AppointmentStartDate",
+											"value": "2025-04-11T19%3A38%3A10.341"
+										},
+										{
+											"key": "AppointmentEndDate",
+											"value": "2025-04-11T19%3A38%3A10.341"
+										},
+										{
+											"key": "Page",
+											"value": "1"
+										},
+										{
+											"key": "PracticeIds",
+											"value": "81"
+										},
+										{
+											"key": "BillingStatusIds",
+											"value": "2%2C5%2C17%2C86%2C122%2C124%2C133%2C134%2C135%2C136%2C137%2C138%2C147%2C160%2C161%2C198%2C199%2C213"
+										},
+										{
+											"key": "PayorIds",
+											"value": null
+										},
+										{
+											"key": "LoggedInMemberId",
+											"value": "8920"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "74829a24-5752-407d-8be5-108909b62f03"
+				}
+			],
+			"id": "d5681699-7e59-488d-8721-f9a53b56f888"
+		},
+		{
+			"name": "External Document Upload",
+			"item": [
+				{
+					"name": "GetExternalDocumentUpload",
+					"id": "9199f7c7-5096-4037-baeb-50c7437e14b7",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/ehr/ExternalDocumentUpload"
+					},
+					"response": []
+				},
+				{
+					"name": "GetExternalDocumentUpload/SignedUrl",
+					"id": "5776e2a9-61cf-4b30-bff1-ba3cf4e35d57",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/ehr/ExternalDocumentUpload/SignedUrl"
+					},
+					"response": []
+				}
+			],
+			"id": "381d4bb1-4b87-47ab-b3df-af69db76c6dd"
+		},
+		{
+			"name": "Fax Dashboard",
+			"item": [
+				{
+					"name": "GetFax",
+					"id": "c0ecbdd7-edfe-468c-91f1-81ae20cb4085",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/ehr/Fax"
+					},
+					"response": []
+				},
+				{
+					"name": "GetUnreadcount",
+					"id": "1b6a315b-bd3d-48bb-8071-eef676b0be2e",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/ehr/Fax/UnReadCount"
+					},
+					"response": []
+				},
+				{
+					"name": "GetFaxAttachment",
+					"id": "a2489a87-f972-44cd-bdf6-6e9bc12b4eb3",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/ehr/Fax/Attachment"
+					},
+					"response": []
+				}
+			],
+			"id": "0b6cb5af-cc63-4c68-bc17-9da782f98c70"
+		},
+		{
+			"name": "Case Management Dashboard",
+			"item": [
+				{
+					"name": "GetCaseManagementDashboard",
+					"id": "0adb5275-5735-47cc-b70b-ff7d7056a56d",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/ehr/CaseManagementDashboard"
+					},
+					"response": []
+				},
+				{
+					"name": "GetCMDCaseManagers",
+					"id": "927244f8-16a0-41cc-8aeb-934d3f534a81",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/ehr/CaseManagementDashboard/CaseManagers"
+					},
+					"response": []
+				}
+			],
+			"id": "fa9fabdd-d403-4329-8441-3366dff2a597"
+		},
+		{
+			"name": "Collection Dashboard",
+			"item": [
+				{
+					"name": "GetCollectionTeams",
+					"id": "b9139f79-42d6-4417-bf39-dd423f9c9fef",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/rcm/Collection/Teams"
+					},
+					"response": []
+				},
+				{
+					"name": "GetCollectionTeamMembers",
+					"id": "d905267d-4ab6-4eba-b250-1ceeaf701ff4",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/rcm/Collection/TeamMembers"
+					},
+					"response": []
+				},
+				{
+					"name": "GetCollectionClaimPendingPaymentDetailsHistory",
+					"id": "77de0f73-ebff-4fda-bc3a-fcd31e89a31f",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/rcm/Collection/ClaimPendingPaymentDetailsHistory"
+					},
+					"response": []
+				},
+				{
+					"name": "GetClaimCollectionStatusHistory",
+					"id": "17d5584f-e8de-431f-bba6-b50557a373dd",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/rcm/Collection/ClaimCollectionStatusHistory"
+					},
+					"response": []
+				}
+			],
+			"id": "2c31527b-3cf3-42ed-aa08-1c0861ad1353"
+		},
+		{
+			"name": "Dynamic Forms",
+			"item": [
+				{
+					"name": "GETDynamicForms",
+					"id": "47c628dd-87ff-4304-9f97-456bd5d0c2a3",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/ehr/DynamicForms/Get"
+					},
+					"response": []
+				}
+			],
+			"id": "3af43fe3-0066-49a5-9af3-6756d76f7b0e"
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": {
+			"token": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjQxRUYwQTlENTEzNzEyOTNBNjI1QTU5NUQzQUVGRDdEMDczMjBDODRSUzI1NiIsInR5cCI6ImF0K2p3dCIsIng1dCI6IlFlOEtuVkUzRXBPbUphV1YwNjc5ZlFjeURJUSJ9.eyJuYmYiOjE3NDUyMjU5NzcsImV4cCI6MTc0NTU4NTk3NywiaXNzIjoiaHR0cHM6Ly9pZHBxYXYyLnlvdXJkcnMuY29tIiwiYXVkIjpbInlvdXJkcnNhcGkiLCJ5b3VyZHJzaWRwYXBpIiwieW91cmRyc3N5Y3dlYnNlcnZpY2UiXSwiY2xpZW50X2lkIjoieW91cmRycy5pbnRlcmFjdGl2ZS5wdWJsaWMud2ViLnFhdjIiLCJzdWIiOiI4OTIwIiwiYXV0aF90aW1lIjoxNzQ1MjI1OTY0LCJpZHAiOiJsb2NhbCIsInJvbGUiOiIxLDQsODMiLCJhbGxvd2VkZG9tYWluIjoicWFmLnlvdXJkcnMuY29tIiwiYXNzb2NpYXRlZGJ1c2luZXNzY2xpZW50cyI6Ilt7XCJidXNpbmVzc2NsaWVudHVuaXF1ZWlkXCI6XCJlYjRkYjkwY1wiLFwiYnVzaW5lc3NjbGllbnRtZW1iZXJpZFwiOjg5MjAsXCJidXNpbmVzc2NsaWVudG5hbWVcIjpcIkhlYWx0aCBFYXN0XCIsXCJzdWJkb21pblwiOlwicWFmLnlvdXJkcnMuY29tXCJ9XSIsImJ1c2luZXNzY2xpZW50dW5pcXVlaWQiOiJlYjRkYjkwYyIsInVuYW1lIjoiUUFUZWFtQHlkLmNvbSIsIm9wZW50b2thcGlrZXkiOiI0Nzg1MDkwMSIsInVwZG94ZmF4bnVtYmVyIjoiODg4NDQwNDU5OCIsImp0aSI6IjkxODdBRDNBNkY3MUVFODFCMjdFMzI4OTVDQ0QxNjU2Iiwic2lkIjoiNUIwMDc3QkQ1NkFDRDBFOEUzOURCNDM4OTk4QzgwOUQiLCJpYXQiOjE3NDUyMjU5NzcsInNjb3BlIjpbIm9wZW5pZCIsInByb2ZpbGUiLCJlbWFpbCIsInlvdXJkcnNhcGlzY29wZSIsInlvdXJkcnNpZHBhcGlzY29wZSIsInlvdXJkcnNzeWN3ZWJzZXJ2aWNlc2NvcGUiLCJvZmZsaW5lX2FjY2VzcyJdLCJhbXIiOlsicHdkIl19.TRKBD6ID_vJw3kGa7ipLNTq01LEtAbUhgyVLlKm9QncRNHurUcM8q0rn6WUSH57QfZijtbcEPKm-xvCiQO0Fmj13LaH_OsgAqblJP-AEfFXjqOJnu6d2NfkT-_79dQHm7hRR5FFPnixeF7_ebaQ5mBuyrx8fIwmk5KegSXiV9b0KQuszKK3OmF4fU6Ul80lV0-hbniKgTu_3C5lqP1aN8IngzMo6WCDurYRZ5ow5mqsiLgXBuIPmsxFHqU4HaWyQ1JBc0NRiZBEsoKUZtGJ1EXGhjv9EZGiHuirvmIIr5KXl_s9QpF0Sps0gis_pxUjNOxME7aMK-AKuomwtpk9QDuRBob_plb8WkaTiyD9j8HKxP0uPdSgu_eTSEovz3fJ3fWIgtF6rrSDDRjPtX3lJoF1KPCpas23ctf8igjUR8lqZhJbCDb4wda7zOFV3dZBzxNxMpUc7YYWpdfP53jJwbWuV0FEAt5zlOKTEkOyOcq2meBCrX9S01aQov-ZOkcr_ThnqJj9Z58CZFD2xMy2yxfS3T_TmQnoaisR7SyRQwj2wa7iwDLkXXBV9FNfgf5_HYI4tYYayFt0e0v8U2ZHSfzOUxEQGKgXsmfPYucnOBXYy3a38wbJOhWMRTus4AEoFkph29mx0mdF2WzHiY91F-GcytqZaKpdF-7noieKHaOE"
+		}
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				],
+				"id": "cd9d8ff4-3812-412e-b75e-9abdc5962ad7"
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				],
+				"id": "bc6703c0-a9d8-4689-9c38-12dda01e6b32"
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://apiqav2.yourdrs.com/v1"
+		}
+	]
+}
